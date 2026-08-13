@@ -82,24 +82,18 @@
                 <span id="sideRole" class="mt-2 text-[9px] font-extrabold uppercase tracking-widest bg-slate-200 text-slate-600 px-2 py-1 rounded-md">ROLE</span>
             </div>
 
-            <nav class="flex-1 overflow-y-auto py-4 flex flex-col justify-between">
-                <ul class="space-y-1 px-3">
+            <nav class="flex-1 overflow-y-auto py-6 flex flex-col justify-start">
+                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest px-6 mb-2">Menu Utama</p>
+                <ul class="space-y-1 px-3 mb-8">
                     <li><button onclick="kembaliKeDashboard()" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-sm font-semibold">Beranda Event</span></button></li>
-                    <li><button onclick="Swal.fire('Segera Hadir', 'Fitur Riwayat Arsip sedang dalam pengembangan.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"><i data-lucide="history" class="w-5 h-5"></i><span class="text-sm font-semibold">Riwayat Lomba</span></button></li>
-                    <li><button onclick="Swal.fire('Segera Hadir', 'Pusat Unduhan Juknis sedang disiapkan.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"><i data-lucide="folder-down" class="w-5 h-5"></i><span class="text-sm font-semibold">Pusat Unduhan</span></button></li>
                 </ul>
 
-                <div class="mt-6 mx-4 p-5 bg-brand-50 rounded-2xl border border-brand-100 shadow-inner">
-                    <h4 class="text-[10px] font-extrabold text-brand-700 uppercase tracking-widest mb-4 flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> Progres Pendaftar</h4>
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[11px] font-bold text-brand-900/60">Terkunci (Final)</span>
-                        <span class="text-sm font-black text-emerald-600 bg-white px-2 py-0.5 rounded-md border border-emerald-100 shadow-sm" id="statTerkunci">0</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-bold text-brand-900/60">Masih Draft/Revisi</span>
-                        <span class="text-sm font-black text-amber-600 bg-white px-2 py-0.5 rounded-md border border-amber-100 shadow-sm" id="statDraft">0</span>
-                    </div>
-                </div>
+                <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest px-6 mb-2">Pintasan Informasi</p>
+                <ul class="space-y-1 px-3">
+                    <li><button onclick="bukaLinkDinamis('LINK_1', document.getElementById('labelMenu1').innerText)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50"><i data-lucide="external-link" class="w-5 h-5"></i><span id="labelMenu1" class="text-sm font-semibold">Menu Pintasan 1</span></button></li>
+                    <li><button onclick="bukaLinkDinamis('LINK_2', document.getElementById('labelMenu2').innerText)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50"><i data-lucide="folder-down" class="w-5 h-5"></i><span id="labelMenu2" class="text-sm font-semibold">Menu Pintasan 2</span></button></li>
+                    <li><button onclick="bukaLinkDinamis('LINK_3', document.getElementById('labelMenu3').innerText)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50"><i data-lucide="bar-chart-2" class="w-5 h-5"></i><span id="labelMenu3" class="text-sm font-semibold">Menu Pintasan 3</span></button></li>
+                </ul>
             </nav>
 
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
@@ -188,6 +182,19 @@
                                 <button onclick="resetFilterCabang()" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors">Lihat Semua</button>
                             </div>
                             <div id="containerCabang" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3"></div>
+                            
+                            <!-- Widget Info Progres (Pindah ke kiri untuk UX yang lebih baik) -->
+                            <div class="mt-6 p-5 bg-brand-50 rounded-2xl border border-brand-100 shadow-inner">
+                                <h4 class="text-[10px] font-extrabold text-brand-700 uppercase tracking-widest mb-4 flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> Progres Pendaftar</h4>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-[11px] font-bold text-brand-900/60">Terkunci (Final)</span>
+                                    <span class="text-sm font-black text-emerald-600 bg-white px-2 py-0.5 rounded-md border border-emerald-100 shadow-sm" id="statTerkunci">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[11px] font-bold text-brand-900/60">Masih Draft/Revisi</span>
+                                    <span class="text-sm font-black text-amber-600 bg-white px-2 py-0.5 rounded-md border border-amber-100 shadow-sm" id="statDraft">0</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- KOLOM KANAN: Tabel Data Peserta -->
@@ -310,14 +317,33 @@
         // --- API URL GOOGLE APPS SCRIPT ANDA ---
         const API_URL = "https://script.google.com/macros/s/AKfycbyxDqzn2-Yj4BXmN_V3rF7djznKplMzfuMkeujiHBnOQEcUTaBDqvZWK1iCIjfDAkpFQg/exec";
         
-        let STATE = { user: null, events: [], cabangs: [], dashboardData: [], currentEventId: null, currentCabang: null, currentTipe: null, isClosed: false };
+        let STATE = { user: null, events: [], cabangs: [], dashboardData: [], settings: {}, currentEventId: null, currentCabang: null, currentTipe: null, isClosed: false };
 
-        // AMBIL GAMBAR BACKGROUND DARI SERVER
+        // AMBIL PENGATURAN (BACKGROUND & LABEL LINK) DARI SERVER
         callAPI('getSettings').then(res => {
-            if(res.status === 'success' && res.bg_url) {
-                document.getElementById('view-landing').style.backgroundImage = `url('${res.bg_url}')`;
+            if(res.status === 'success' && res.data) {
+                STATE.settings = res.data;
+                
+                // Atur Background Landing Page
+                if(res.bg_url) {
+                    document.getElementById('view-landing').style.backgroundImage = `url('${res.bg_url}')`;
+                }
+                
+                // Ubah Judul Menu Pintasan secara dinamis dari Spreadsheet
+                if(res.data['LABEL_1']) document.getElementById('labelMenu1').innerText = res.data['LABEL_1'];
+                if(res.data['LABEL_2']) document.getElementById('labelMenu2').innerText = res.data['LABEL_2'];
+                if(res.data['LABEL_3']) document.getElementById('labelMenu3').innerText = res.data['LABEL_3'];
             }
         });
+
+        // FUNGSI MEMBUKA LINK DINAMIS
+        function bukaLinkDinamis(kunci, namaFitur) {
+            if(STATE.settings && STATE.settings[kunci] && STATE.settings[kunci].trim() !== "") {
+                window.open(STATE.settings[kunci], '_blank');
+            } else {
+                Swal.fire('Belum Tersedia', `Tautan pintasan untuk <b>${namaFitur}</b> belum dikonfigurasi di Sheet Pengaturan.`, 'info');
+            }
+        }
 
         const appModal = {
             open: function(id) { const el = document.getElementById(id); if (!el) return; document.body.classList.add('modal-open'); el.classList.remove('hidden'); void el.offsetWidth; const overlay = el.querySelector('.modal-overlay'); const content = el.querySelector('.modal-content'); if (overlay) overlay.classList.remove('opacity-0'); if (content) { content.classList.remove('opacity-0', 'translate-y-full'); } },
@@ -331,12 +357,10 @@
             } return dateString;
         }
 
-        // FUNGSI PENGECEKAN DEADLINE PENDAFTARAN
         function cekEventDitutup(dateStr) {
             if(!dateStr || dateStr === "-") return false;
-            const parts = dateStr.split("-"); // Format dari DB: DD-MM-YYYY
+            const parts = dateStr.split("-"); 
             if(parts.length !== 3) return false;
-            // Tutup pada jam 23:59 hari tersebut
             const deadline = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
             const now = new Date();
             return now > deadline;
@@ -346,7 +370,6 @@
             const savedUser = localStorage.getItem('talentaUser'); 
             if (savedUser) { 
                 try {
-                    // Mencegah eksploitasi Role manual dengan decode Base64
                     STATE.user = JSON.parse(decodeURIComponent(atob(savedUser))); 
                     if(STATE.user.role === 'ADMIN' || STATE.user.role === 'PANITIA') {
                         window.location.href = 'admin.html';
@@ -373,7 +396,6 @@
             Swal.fire({ title: 'Memeriksa Akses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             const res = await callAPI('login', { pin: pin });
             if (res.status === 'success') { 
-                // Enkripsi Local Storage (Anti-Spoofing Dasar)
                 const userEncoded = btoa(encodeURIComponent(JSON.stringify(res.user)));
                 localStorage.setItem('talentaUser', userEncoded);
 
@@ -405,10 +427,14 @@
             muatDataServer();
         }
 
-        async function muatDataServer() {
+        async function muatDataServer(forceRefresh = false) {
             document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex');
             document.getElementById('view-detail').classList.add('hidden'); document.getElementById('view-detail').classList.remove('flex');
             document.getElementById('loaderData').classList.remove('hidden'); document.getElementById('loaderData').classList.add('flex');
+
+            if (forceRefresh) {
+                await callAPI('syncDatabase', STATE.user);
+            }
 
             const [initRes, dashRes] = await Promise.all([ callAPI('getInitData'), callAPI('getDashboard', STATE.user) ]);
 
@@ -429,8 +455,6 @@
             
             if(STATE.currentEventId) { 
                 document.getElementById('view-detail').classList.remove('hidden'); document.getElementById('view-detail').classList.add('flex');
-                
-                // Cek ulang apakah event sudah ditutup setiap refresh
                 const ev = STATE.events.find(e => e.id_event === STATE.currentEventId);
                 if(ev) updateStatusVisualEvent(ev);
 
@@ -510,7 +534,7 @@
 
         function kembaliKeDashboard() { 
             STATE.currentEventId = null; resetFilterCabang(); 
-            document.getElementById('inCariPeserta').value = ""; // Bersihkan kotak pencarian
+            document.getElementById('inCariPeserta').value = "";
             document.getElementById('view-detail').classList.add('hidden'); document.getElementById('view-detail').classList.remove('flex'); 
             renderDashboardEvents(); 
         }
@@ -564,7 +588,6 @@
             const btnCetak = document.getElementById('btnCetakBukti');
             const btnTambah = document.getElementById('btnTambahPeserta');
 
-            // 1. Logika Tampil/Sembunyi berdasarkan Tutup/Aktif Event
             if (STATE.isClosed) {
                 btnTambah.classList.add('hidden'); btnTambah.classList.remove('flex');
                 btnLock.classList.add('hidden'); helpLock.classList.add('hidden');
@@ -576,20 +599,17 @@
                 }
             }
             
-            // 2. Filter Berdasarkan Kotak Pencarian
             const kataKunci = document.getElementById('inCariPeserta') ? document.getElementById('inCariPeserta').value.toLowerCase() : '';
             if (kataKunci) {
                 pendaftar = pendaftar.filter(d => d.nama.toLowerCase().includes(kataKunci) || d.nisn.toString().includes(kataKunci));
             }
 
-            // 3. Filter Berdasarkan Cabang
             if(STATE.currentCabang) {
                 pendaftar = pendaftar.filter(d => d.cabang === STATE.currentCabang);
             }
             
             document.getElementById('countPendaftarTabel').innerText = pendaftar.length;
 
-            // 4. Hitung untuk Tombol Cetak & Tombol Kunci Data
             const hasDrafts = pendaftar.some(d => d.status === 'DRAFT' || d.status === 'REVISI');
             const lockedData = STATE.dashboardData.filter(d => d.id_event === STATE.currentEventId && d.status !== 'DRAFT' && d.status !== 'REVISI');
             
@@ -611,7 +631,6 @@
                 }
             }
 
-            // 5. Render HTML Tabel
             if(pendaftar.length === 0) {
                 tBody.innerHTML = `<tr><td colspan="5" class="py-16 text-center"><div class="flex flex-col items-center justify-center"><i data-lucide="inbox" class="w-12 h-12 text-slate-300 mb-3"></i><p class="text-slate-500 font-medium">Data pendaftar kosong.</p></div></td></tr>`; 
                 lucide.createIcons(); return;
@@ -633,7 +652,6 @@
                             <button onclick="hapusDaftar('${d.id_daftar}', '${d.nama}')" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>`;
                 } else if (isDraft && STATE.isClosed) {
-                    // Beri label jika event ditutup sebelum disubmit
                     aksiHtml = `<span class="text-[9px] text-red-500 font-bold uppercase tracking-widest bg-red-50 px-2 py-1 rounded border border-red-100"><i data-lucide="x-circle" class="w-3 h-3 inline"></i> Expired</span>`;
                 }
 
@@ -658,17 +676,11 @@
             lucide.createIcons();
         }
 
-        // --- FUNGSI UNDUH BUKTI PENDAFTARAN (EXCEL) - DIURUTKAN ---
         function cetakBuktiExcel() {
-            // Hanya mencetak yang statusnya TIDAK DRAFT/REVISI
             let pendaftar = STATE.dashboardData.filter(d => d.id_event === STATE.currentEventId && d.status !== 'DRAFT' && d.status !== 'REVISI');
-            
-            if(pendaftar.length === 0) {
-                Swal.fire('Data Kosong', 'Belum ada data pendaftar yang disubmit/dikunci.', 'info');
-                return;
-            }
+            if(pendaftar.length === 0) { Swal.fire('Data Kosong', 'Belum ada data pendaftar yang disubmit/dikunci.', 'info'); return; }
 
-            // REVERSE: Ubah urutan pendaftar (pendaftar paling awal menjadi paling atas)
+            // URUTAN CETAK: Pendaftar Paling Awal Berada di Atas
             pendaftar = [...pendaftar].reverse();
 
             const ev = STATE.events.find(e => e.id_event === STATE.currentEventId);
@@ -679,52 +691,22 @@
 
             let html = `
             <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    .table-data { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11pt; }
-                    .table-data th, .table-data td { border: 0.5pt solid windowtext; padding: 5px; vertical-align: middle; }
-                    .table-data th { background-color: #f3f4f6; font-weight: bold; text-align: center; }
-                    .header-text { text-align: center; font-weight: bold; font-family: Arial, sans-serif; }
-                    .normal-text { font-family: Arial, sans-serif; font-size: 11pt; }
-                </style>
-            </head>
+            <head><meta charset="utf-8"><style>.table-data { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 11pt; } .table-data th, .table-data td { border: 0.5pt solid windowtext; padding: 5px; vertical-align: middle; } .table-data th { background-color: #f3f4f6; font-weight: bold; text-align: center; } .header-text { text-align: center; font-weight: bold; font-family: Arial, sans-serif; } .normal-text { font-family: Arial, sans-serif; font-size: 11pt; }</style></head>
             <body>
                 <table>
                     <tr><td colspan="7" class="header-text" style="font-size: 14pt;">BUKTI PENDAFTARAN PESERTA LOMBA</td></tr>
                     <tr><td colspan="7" class="header-text" style="font-size: 16pt;">${STATE.user.instansi.toUpperCase()}</td></tr>
                     <tr><td colspan="7" class="header-text" style="font-size: 12pt; font-weight: normal;">Korwilcambidik Kecamatan Selogiri</td></tr>
-                    <tr><td colspan="7"></td></tr>
-                    <tr><td colspan="7" class="normal-text"><b>Event Lomba:</b> ${ev.nama_event}</td></tr>
-                    <tr><td colspan="7" class="normal-text"><b>Waktu Cetak:</b> ${timestamp} WIB</td></tr>
-                    <tr><td colspan="7"></td></tr>
+                    <tr><td colspan="7"></td></tr><tr><td colspan="7" class="normal-text"><b>Event Lomba:</b> ${ev.nama_event}</td></tr>
+                    <tr><td colspan="7" class="normal-text"><b>Waktu Cetak:</b> ${timestamp} WIB</td></tr><tr><td colspan="7"></td></tr>
                 </table>
-                
                 <table class="table-data">
-                    <tr>
-                        <th style="width: 40px;">No</th>
-                        <th style="width: 200px;">Nama Lengkap Peserta</th>
-                        <th style="width: 120px;">NISN</th>
-                        <th style="width: 60px;">L/P</th>
-                        <th style="width: 180px;">Tempat, Tgl Lahir</th>
-                        <th style="width: 150px;">Cabang Lomba</th>
-                        <th style="width: 100px;">Kategori</th>
-                    </tr>
+                    <tr><th style="width: 40px;">No</th><th style="width: 200px;">Nama Lengkap Peserta</th><th style="width: 120px;">NISN</th><th style="width: 60px;">L/P</th><th style="width: 180px;">Tempat, Tgl Lahir</th><th style="width: 150px;">Cabang Lomba</th><th style="width: 100px;">Kategori</th></tr>
             `;
 
             pendaftar.forEach((d, idx) => {
                 let jkCode = d.jk === 'Laki-laki' ? 'L' : (d.jk === 'Perempuan' ? 'P' : '-');
-                html += `
-                    <tr>
-                        <td align="center">${idx + 1}</td>
-                        <td>${d.nama}</td>
-                        <td style="mso-number-format:'\\@'; text-align: center;">${d.nisn}</td>
-                        <td align="center">${jkCode}</td>
-                        <td>${d.ttl}</td>
-                        <td>${d.cabang}</td>
-                        <td align="center">${d.gender || 'Umum'}</td>
-                    </tr>
-                `;
+                html += `<tr><td align="center">${idx + 1}</td><td>${d.nama}</td><td style="mso-number-format:'\\@'; text-align: center;">${d.nisn}</td><td align="center">${jkCode}</td><td>${d.ttl}</td><td>${d.cabang}</td><td align="center">${d.gender || 'Umum'}</td></tr>`;
             });
 
             let namaKS = STATE.user.nama_ks || "(...........................................)";
@@ -732,34 +714,15 @@
             let nipGuru = STATE.user.nip && STATE.user.nip !== "-" ? "NIP. " + STATE.user.nip : "NIP. -";
 
             html += `
-                </table>
-                <br>
+                </table><br>
                 <table style="width: 100%; font-family: Arial, sans-serif; font-size: 11pt;">
-                    <tr>
-                        <td colspan="3" style="text-align: center;">Mengetahui,</td>
-                        <td colspan="1" style="width: 20px;"></td>
-                        <td colspan="3" style="text-align: center;">Selogiri, ${tglCetak}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: center;">Kepala Sekolah</td>
-                        <td colspan="1"></td>
-                        <td colspan="3" style="text-align: center;">Guru / Pendamping</td>
-                    </tr>
+                    <tr><td colspan="3" style="text-align: center;">Mengetahui,</td><td colspan="1" style="width: 20px;"></td><td colspan="3" style="text-align: center;">Selogiri, ${tglCetak}</td></tr>
+                    <tr><td colspan="3" style="text-align: center;">Kepala Sekolah</td><td colspan="1"></td><td colspan="3" style="text-align: center;">Guru / Pendamping</td></tr>
                     <tr><td colspan="7" style="height: 60px;"></td></tr>
-                    <tr>
-                        <td colspan="3" style="text-align: center; font-weight: bold;"><u>${namaKS}</u></td>
-                        <td colspan="1"></td>
-                        <td colspan="3" style="text-align: center; font-weight: bold;"><u>${STATE.user.nama}</u></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: center;">${nipKS}</td>
-                        <td colspan="1"></td>
-                        <td colspan="3" style="text-align: center;">${nipGuru}</td>
-                    </tr>
+                    <tr><td colspan="3" style="text-align: center; font-weight: bold;"><u>${namaKS}</u></td><td colspan="1"></td><td colspan="3" style="text-align: center; font-weight: bold;"><u>${STATE.user.nama}</u></td></tr>
+                    <tr><td colspan="3" style="text-align: center;">${nipKS}</td><td colspan="1"></td><td colspan="3" style="text-align: center;">${nipGuru}</td></tr>
                 </table>
-            </body>
-            </html>
-            `;
+            </body></html>`;
 
             const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
             const url = URL.createObjectURL(blob);
@@ -771,7 +734,6 @@
             document.body.removeChild(link);
         }
 
-        // --- FORM MODAL POP-UP ---
         function bukaFormInput(idEdit = null) {
             document.getElementById('formPendaftaran').reset();
             document.getElementById('labelCabangTerpilih').innerText = STATE.currentCabang;
@@ -794,12 +756,10 @@
             appModal.open('modalFormInput');
         }
 
-        // PENCEGAHAN DOUBLE SUBMIT (ANTI SPAM)
         async function simpanDraftPendaftaran() {
             const form = document.getElementById('formPendaftaran'); 
             if(!form.checkValidity()) { form.reportValidity(); return; }
             
-            // Matikan tombol sementara proses API berjalan
             const btnSimpan = document.getElementById('btnSimpanModal');
             const btnBatal = document.getElementById('btnBatalModal');
             btnSimpan.disabled = true; btnBatal.disabled = true;
@@ -817,22 +777,16 @@
             
             const res = await callAPI('submitDaftar', payload);
             
-            // Kembalikan tombol ke bentuk semula
             btnSimpan.disabled = false; btnBatal.disabled = false;
             document.getElementById('iconSimpan').setAttribute('data-lucide', 'save');
             document.getElementById('iconSimpan').classList.remove('animate-spin');
             document.getElementById('textSimpan').innerText = "SIMPAN DRAFT";
             lucide.createIcons();
 
-            if(res.status === 'success') { 
-                appModal.close('modalFormInput'); 
-                Swal.fire({ icon: 'success', title: 'Tersimpan', text: 'Data draf telah diperbarui.', timer: 1500, showConfirmButton: false }); 
-                muatDataServer(); 
-            } 
+            if(res.status === 'success') { appModal.close('modalFormInput'); Swal.fire({ icon: 'success', title: 'Tersimpan', text: 'Data draf telah diperbarui.', timer: 1500, showConfirmButton: false }); muatDataServer(); } 
             else { Swal.fire('Error', res.message, 'error'); }
         }
 
-        // --- AKSI: HAPUS & KUNCI ---
         function hapusDaftar(idDaftar, nama) {
             Swal.fire({ title: 'Hapus Draft?', html: `Data peserta <b>${nama}</b> akan dihapus permanen.`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal', confirmButtonColor: '#ef4444', borderRadius: '1.5rem' }).then(async (r) => {
                 if (r.isConfirmed) {
