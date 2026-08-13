@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Portal Admin - Talenta Selogiri</title>
+    
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/144/medal.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Pustaka Eksternal -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } } } }
+    </script>
+
+    <style>
+        body { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        table { border-collapse: separate; border-spacing: 0; }
+        th { background-color: #f1f5f9; text-transform: uppercase; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; color: #475569; padding: 1rem; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 500; }
+        tr:hover td { background-color: #f8fafc; }
+        
+        .nav-item { transition: all 0.2s ease; }
+        .nav-item.active { background-color: rgba(255,255,255,0.1); color: #ffffff; font-weight: 700; border-right: 3px solid #60a5fa; }
+    </style>
+</head>
+<body class="h-screen w-full overflow-hidden flex relative selection:bg-brand-500 selection:text-white">
+
+    <!-- LANDING PAGE (LOGIN ADMIN) -->
+    <div id="view-landing" class="fixed inset-0 z-50 flex items-center justify-center p-5 transition-all duration-700 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-slate-900/80 mix-blend-multiply"></div>
+        <div class="glass-box rounded-[2rem] p-8 w-full max-w-md relative z-10 fade-in text-center shadow-2xl text-white" style="background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);">
+            <div class="mb-8 flex flex-col items-center">
+                <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mb-5 shadow-lg border border-slate-600">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-brand-400"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight leading-tight">RUANG PANITIA</h1>
+                <p class="text-[11px] font-bold text-brand-400 uppercase tracking-widest mt-2">Verifikasi & Pengelolaan Data</p>
+            </div>
+            
+            <form onsubmit="event.preventDefault(); doLogin();" class="space-y-5">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i data-lucide="key" class="w-5 h-5 text-slate-500"></i></div>
+                    <input type="password" id="inputPin" required autocomplete="off" placeholder="PIN Akses Panitia" class="w-full bg-slate-800/50 border border-slate-600 rounded-2xl pl-12 pr-5 py-4 text-center text-lg font-bold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+                </div>
+                <button type="submit" class="w-full bg-brand-600 text-white font-extrabold py-4 rounded-2xl shadow-lg hover:bg-brand-500 hover:-translate-y-1 active:scale-95 transition-all duration-300">
+                    OTENTIKASI MASUK
+                </button>
+            </form>
+            <button onclick="window.location.href='?v=index'" class="text-[10px] text-slate-400 mt-8 font-bold uppercase tracking-widest hover:text-white transition-colors">Kembali ke Portal Pendaftar</button>
+        </div>
+    </div>
+
+    <!-- OVERLAY LOADING -->
+    <div id="loaderGlobal" class="fixed inset-0 z-[999] bg-slate-900/50 backdrop-blur-sm flex flex-col items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
+            <i data-lucide="loader-2" class="w-10 h-10 text-brand-600 animate-spin mb-3"></i>
+            <span class="text-sm font-extrabold text-slate-700 uppercase tracking-widest">Sinkronisasi Server...</span>
+        </div>
+    </div>
+
+    <!-- MAIN APP LAYOUT -->
+    <div id="app-layout" class="hidden w-full h-full flex overflow-hidden">
+        
+        <!-- SIDEBAR ADMIN (GELAP) -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-[280px] bg-slate-900 text-slate-300 h-full shrink-0 shadow-2xl z-20">
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30 shrink-0"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                <div>
+                    <h1 class="font-extrabold text-[15px] text-white leading-tight">PANEL KENDALI</h1>
+                    <p class="text-[9px] font-bold text-brand-400 uppercase tracking-widest">Portal Talenta</p>
+                </div>
+            </div>
+
+            <div class="p-6 border-b border-slate-800 flex flex-col items-center text-center bg-slate-800/50">
+                <h3 id="sideName" class="font-extrabold text-white text-base leading-tight">Nama Admin</h3>
+                <span id="sideRole" class="mt-2 text-[10px] font-black uppercase tracking-widest bg-brand-500 text-white px-2.5 py-1 rounded-md shadow-sm">ROLE</span>
+                <p id="sideEvent" class="text-[10px] font-bold text-slate-400 mt-2 line-clamp-1 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Akses: Semua Event</p>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-6 flex flex-col gap-2 px-3">
+                <button onclick="bukaBerandaEvent()" id="nav-events" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="layers" class="w-5 h-5"></i> Beranda Event</button>
+                
+                <div id="menuEventContext" class="hidden flex-col gap-2 mt-2 pt-2 border-t border-slate-800">
+                    <p class="text-[9px] font-extrabold text-brand-400 uppercase tracking-widest px-4 mb-1" id="sideContextEventName">EVENT TERPILIH</p>
+                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="pie-chart" class="w-5 h-5"></i> Analitik & Progres</button>
+                    <button onclick="switchView('verifikasi')" id="nav-verifikasi" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="check-square" class="w-5 h-5"></i> Verifikasi Berkas</button>
+                    <button onclick="switchView('rekap')" id="nav-rekap" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Ekspor Data CSV</button>
+                </div>
+                
+                <div id="menuAdminOnly" class="hidden mt-4 pt-4 border-t border-slate-800">
+                    <p class="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest px-4 mb-2">Master Data</p>
+                    <button onclick="Swal.fire('Informasi', 'Manajemen Event saat ini dilakukan langsung melalui Google Sheets Master.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="database" class="w-5 h-5"></i> Master Event & Cabang</button>
+                    <button onclick="Swal.fire('Informasi', 'Penambahan akun dan otorisasi dikelola via Google Sheets.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="users-2" class="w-5 h-5"></i> Manajemen Akses</button>
+                </div>
+            </nav>
+
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-red-400 font-bold text-xs hover:bg-red-500/10 hover:text-red-300 transition-colors shadow-sm"><i data-lucide="log-out" class="w-4 h-4"></i> Keluar Sistem</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main id="main-content" class="flex-1 h-full flex flex-col relative overflow-y-auto bg-slate-50">
+            
+            <!-- MOBILE HEADER -->
+            <header id="mobile-header" class="md:hidden bg-slate-900 border-b border-slate-800 px-5 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                    <h2 class="font-extrabold text-white leading-tight text-sm">PANEL ADMIN</h2>
+                </div>
+                <button onclick="doLogout()" class="p-2 bg-slate-800 text-red-400 rounded-lg"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </header>
+
+            <!-- TOP BAR -->
+            <div id="top-bar" class="bg-white border-b border-slate-200 px-6 md:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 sticky top-0 z-10 shadow-sm">
+                <h2 id="pageTitle" class="text-xl font-black text-slate-800">Pilih Event Lomba</h2>
+                <div class="flex items-center gap-3">
+                    <button onclick="muatDataServer(true)" class="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-lg font-bold text-xs hover:bg-brand-50 hover:text-brand-600 transition-colors shadow-sm active:scale-95">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sinkron Database
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 flex-1">
+                
+                <!-- VIEW 1: BERANDA EVENT -->
+                <div id="view-events" class="fade-in max-w-6xl mx-auto flex flex-col pb-10">
+                    <div class="mb-8">
+                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Beranda Event Terpusat</h2>
+                        <p class="text-slate-500 font-medium mt-1 text-sm md:text-base">Pilih panel event lomba di bawah ini untuk memulai proses verifikasi dan analitik data.</p>
+                    </div>
+
+                    <div id="containerEvents" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    <div id="emptyEvents" class="flex-col items-center justify-center py-20 hidden opacity-60">
+                        <i data-lucide="calendar-x" class="w-20 h-20 text-slate-300 mb-4"></i>
+                        <h5 class="text-lg font-extrabold text-slate-500">Belum ada event yang aktif untuk Anda.</h5>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: DASHBOARD ANALITIK -->
+                <div id="view-dashboard" class="fade-in max-w-7xl mx-auto hidden flex-col gap-6 pb-10">
+                    
+                    <!-- Progress Bar Pengiriman Instansi -->
+                    <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
+                        <div class="flex justify-between items-end mb-3">
+                            <div>
+                                <h3 class="text-base font-extrabold text-slate-800">Progres Finalisasi Pendaftar</h3>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5">Rasio dokumen yang sudah dikunci oleh Instansi vs Total Draf dibuat.</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-2xl font-black text-brand-600" id="progressPercentage">0%</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-4 mb-3 overflow-hidden shadow-inner">
+                            <div id="progressBar" class="bg-brand-500 h-4 rounded-full transition-all duration-1000 ease-out relative overflow-hidden" style="width: 0%">
+                                <div class="absolute inset-0 bg-white/20 w-full" style="animation: shimmer 2s infinite linear; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                            <span id="progressFinalText" class="text-emerald-600">0 Sudah Dikunci / Final</span>
+                            <span id="progressDraftText" class="text-amber-500">0 Masih Berupa Draf</span>
+                        </div>
+                    </div>
+
+                    <!-- Bento Grid Stats Dasar -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                            <div class="w-10 h-10 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5"></i></div>
+                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Total Entri Data</h4>
+                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statTotal">0</span>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                            <div class="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
+                            <h4 class="text-emerald-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Sudah Disetujui</h4>
+                            <span class="text-2xl md:text-3xl font-black text-emerald-600" id="statSetuju">0</span>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-amber-200 bg-amber-50 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                            <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="clock" class="w-5 h-5"></i></div>
+                            <h4 class="text-amber-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Antrean Verif</h4>
+                            <span class="text-2xl md:text-3xl font-black text-amber-700" id="statPending">0</span>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                            <div class="w-10 h-10 bg-purple-50 border border-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="school" class="w-5 h-5"></i></div>
+                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Instansi Terlibat</h4>
+                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statSekolah">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Peringatan Darurat -->
+                    <div id="alertDraft" class="hidden bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0">
+                            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-red-800 text-sm">Masih Ada Sekolah yang Belum Mengunci Data!</h4>
+                            <p class="text-xs font-medium text-red-600 mt-1">Terdapat <span id="statDraft" class="font-black bg-white px-1.5 py-0.5 rounded shadow-sm mx-1 text-red-600">0</span> draft peserta yang ditahan (belum disubmit KS). Silakan hubungi sekolah terkait.</p>
+                        </div>
+                    </div>
+
+                    <!-- Panel Chart / Visualisasi -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Chart Donat -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col items-center">
+                            <h3 class="text-sm font-extrabold text-slate-800 mb-6 w-full text-left uppercase tracking-widest">Peta Status Peserta</h3>
+                            <div class="relative w-full max-w-[250px] aspect-square flex justify-center items-center">
+                                <canvas id="chartStatus"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Bar Cabang -->
+                        <div class="lg:col-span-2 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
+                            <h3 class="text-sm font-extrabold text-slate-800 mb-6 uppercase tracking-widest">Distribusi Pendaftar per Cabang</h3>
+                            <div class="relative w-full flex-1 min-h-[250px]">
+                                <canvas id="chartCabang"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Bar Sekolah Teraktif -->
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
+                        <h3 class="text-sm font-extrabold text-slate-800 mb-6 uppercase tracking-widest">Peringkat Instansi Teraktif (Berdasarkan Jumlah Pendaftar Masuk)</h3>
+                        <div class="relative w-full h-[300px]">
+                            <canvas id="chartSekolah"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: VERIFIKASI DENGAN BULK APPROVE -->
+                <div id="view-verifikasi" class="fade-in max-w-6xl mx-auto hidden flex-col">
+                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
+                        
+                        <!-- Header & Bulk Action -->
+                        <div class="p-6 border-b border-slate-100 bg-slate-50/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="font-extrabold text-slate-800 text-lg">Antrean Verifikasi Masuk</h3>
+                                <p class="text-xs font-medium text-slate-500 mt-1">Gunakan centang di tabel untuk memverifikasi secara masal.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 shadow-sm flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                                    Antrean: <span id="countAntrean" class="text-amber-600 font-black text-sm ml-1">0</span>
+                                </div>
+                                <button id="btnSetujuiMasal" onclick="eksekusiMasal()" class="hidden px-5 py-2.5 bg-emerald-600 text-white font-extrabold rounded-xl shadow-md shadow-emerald-500/20 hover:bg-emerald-700 active:scale-95 transition-all text-xs items-center gap-2">
+                                    <i data-lucide="check-square" class="w-4 h-4"></i> Setujui Terpilih (<span id="countSelected">0</span>)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tabel -->
+                        <div class="flex-1 overflow-x-auto w-full">
+                            <table class="w-full text-left min-w-[850px]">
+                                <thead>
+                                    <tr>
+                                        <th class="w-14 text-center">
+                                            <input type="checkbox" id="chkAllVerif" onchange="toggleSemuaCentang(this)" class="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer">
+                                        </th>
+                                        <th class="w-10 text-center">#</th>
+                                        <th>Asal Sekolah & Peserta</th>
+                                        <th>Cabang & Kategori</th>
+                                        <th>Waktu Pengiriman</th>
+                                        <th class="text-center w-36">Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableVerifBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: REKAP & EKSPOR CSV -->
+                <div id="view-rekap" class="fade-in w-full mx-auto hidden flex-col">
+
+                    <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row gap-5 items-start lg:items-center justify-between">
+                        <div class="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full lg:w-auto">
+                            <div class="relative w-full sm:w-auto min-w-[220px]">
+                                <select id="filterSekolah" onchange="renderTabelRekap()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 cursor-pointer transition-all">
+                                    <option value="ALL">Semua Instansi</option>
+                                </select>
+                            </div>
+                            <div class="relative w-full sm:w-auto min-w-[220px]">
+                                <select id="filterCabang" onchange="renderTabelRekap()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 cursor-pointer transition-all">
+                                    <option value="ALL">Semua Cabang Lomba</option>
+                                </select>
+                            </div>
+                            <div class="relative w-full sm:w-auto min-w-[160px]">
+                                <select id="filterStatus" onchange="renderTabelRekap()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 cursor-pointer transition-all">
+                                    <option value="ALL">Semua Status</option>
+                                    <option value="DISETUJUI">Hanya Disetujui</option>
+                                    <option value="PENDING">Menunggu Verifikasi</option>
+                                    <option value="REVISI">Perlu Revisi</option>
+                                    <option value="DRAFT">Masih Draft</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 w-full lg:w-auto shrink-0 mt-2 lg:mt-0">
+                            <button onclick="exportToCSV()" class="w-full lg:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-extrabold text-xs hover:bg-emerald-700 hover:-translate-y-0.5 active:scale-95 transition-all shadow-md shadow-emerald-600/20">
+                                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Unduh File CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left min-w-[800px]">
+                                <thead>
+                                    <tr>
+                                        <th class="w-12 text-center border-b-2 border-slate-200">No</th>
+                                        <th class="border-b-2 border-slate-200">Asal Sekolah</th>
+                                        <th class="border-b-2 border-slate-200">Nama Lengkap & NISN</th>
+                                        <th class="border-b-2 border-slate-200 text-center w-16">L/P</th>
+                                        <th class="border-b-2 border-slate-200">Cabang Lomba</th>
+                                        <th class="border-b-2 border-slate-200">Kategori</th>
+                                        <th class="border-b-2 border-slate-200 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableRekapBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPT LOGIKA ADMIN -->
+    <script>
+        lucide.createIcons();
+        
+        const API_URL = "https://script.google.com/macros/s/AKfycbyxDqzn2-Yj4BXmN_V3rF7djznKplMzfuMkeujiHBnOQEcUTaBDqvZWK1iCIjfDAkpFQg/exec";
+        
+        let STATE = { 
+            user: null, rawData: [], allData: [], filteredData: [], events: [], settings: {}, currentEventId: null
+        };
+
+        let chartStatusInstance = null;
+        let chartCabangInstance = null;
+        let chartSekolahInstance = null;
+
+        window.onload = () => {
+            callAPI('getSettings').then(res => {
+                if(res.status === 'success' && res.data) {
+                    STATE.settings = res.data;
+                    if(res.bg_url) document.getElementById('view-landing').style.backgroundImage = `url('${res.bg_url}')`;
+                }
+            });
+
+            const savedUser = localStorage.getItem('talentaUser');
+            if (!savedUser) { 
+                document.getElementById('view-landing').classList.remove('hidden');
+                document.getElementById('app-layout').classList.add('hidden');
+                return; 
+            }
+            
+            try {
+                STATE.user = JSON.parse(decodeURIComponent(atob(savedUser)));
+                if (STATE.user.role !== 'ADMIN' && STATE.user.role !== 'PANITIA') {
+                    alert("Akses Ditolak!"); window.location.href = 'index.html'; return;
+                }
+                mulaiAplikasiAdmin();
+            } catch(e) {
+                localStorage.removeItem('talentaUser');
+                document.getElementById('view-landing').classList.remove('hidden');
+                document.getElementById('app-layout').classList.add('hidden');
+            }
+        };
+
+        async function doLogin() {
+            const pin = document.getElementById('inputPin').value; if(!pin) return;
+            Swal.fire({ title: 'Otentikasi...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const res = await callAPI('login', { pin: pin });
+            if (res.status === 'success') { 
+                if (res.user.role === 'ADMIN' || res.user.role === 'PANITIA') {
+                    const userEncoded = btoa(encodeURIComponent(JSON.stringify(res.user)));
+                    localStorage.setItem('talentaUser', userEncoded);
+                    STATE.user = res.user; Swal.close(); mulaiAplikasiAdmin(); 
+                } else { 
+                    Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Silakan gunakan Portal Pendaftar.', confirmButtonColor: '#ef4444' }); 
+                }
+            } else { Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: res.message, confirmButtonColor: '#4f46e5' }); }
+        }
+
+        function mulaiAplikasiAdmin() {
+            document.getElementById('view-landing').classList.add('hidden');
+            document.getElementById('app-layout').classList.remove('hidden');
+            document.getElementById('sideName').innerText = STATE.user.nama;
+            document.getElementById('sideRole').innerText = STATE.user.role;
+            if (STATE.user.role === 'ADMIN') document.getElementById('menuAdminOnly').classList.remove('hidden');
+            else document.getElementById('sideEvent').innerText = "Akses Event: " + (STATE.user.akses_event || 'Terbatas');
+            muatDataServer(false);
+        }
+
+        async function callAPI(action, payload = {}) {
+            try { const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, payload: payload }) }); return await response.json(); } 
+            catch (error) { return { status: "error", message: "Gagal terhubung ke server API." }; }
+        }
+
+        function showLoader(show) {
+            const l = document.getElementById('loaderGlobal');
+            if(show) { document.body.classList.add('overflow-hidden'); l.classList.remove('hidden'); } 
+            else { document.body.classList.remove('overflow-hidden'); l.classList.add('hidden'); }
+        }
+
+        function doLogout() {
+            Swal.fire({ title: 'Akhiri Sesi?', text: 'Anda akan keluar dari Panel Kendali.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Keluar', cancelButtonText: 'Batal', confirmButtonColor: '#ef4444' }).then((r) => {
+                if (r.isConfirmed) { localStorage.removeItem('talentaUser'); location.reload(); }
+            });
+        }
+
+        function bukaBerandaEvent() {
+            STATE.currentEventId = null;
+            document.getElementById('menuEventContext').classList.remove('flex'); document.getElementById('menuEventContext').classList.add('hidden');
+            ['dashboard', 'verifikasi', 'rekap'].forEach(v => { document.getElementById(`view-${v}`).classList.add('hidden'); document.getElementById(`view-${v}`).classList.remove('flex'); document.getElementById(`nav-${v}`).classList.remove('active'); });
+            document.getElementById('view-events').classList.remove('hidden'); document.getElementById('view-events').classList.add('flex'); document.getElementById('nav-events').classList.add('active');
+            document.getElementById('pageTitle').innerText = 'Pilih Event Lomba';
+            renderDashboardEvents();
+        }
+
+        function switchView(viewName) {
+            if (!STATE.currentEventId) return;
+            document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex'); document.getElementById('nav-events').classList.remove('active');
+            ['dashboard', 'verifikasi', 'rekap'].forEach(v => { document.getElementById(`view-${v}`).classList.add('hidden'); document.getElementById(`view-${v}`).classList.remove('flex'); document.getElementById(`nav-${v}`).classList.remove('active'); });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden'); document.getElementById(`view-${viewName}`).classList.add('flex'); document.getElementById(`nav-${viewName}`).classList.add('active');
+            const eventInfo = STATE.events.find(e => e.id_event === STATE.currentEventId);
+            const titles = { 'dashboard': 'Analitik: ' + eventInfo.nama_event, 'verifikasi': 'Antrean Verif: ' + eventInfo.nama_event, 'rekap': 'Ekspor Data: ' + eventInfo.nama_event };
+            document.getElementById('pageTitle').innerText = titles[viewName];
+        }
+
+        async function muatDataServer(forceRefresh = false) {
+            showLoader(true);
+            if(forceRefresh) await callAPI('syncDatabase', STATE.user);
+
+            const [dashRes, initRes] = await Promise.all([ callAPI('getDashboard', STATE.user), callAPI('getInitData') ]);
+            
+            if(dashRes.status === 'success' && initRes.status === 'success') {
+                STATE.rawData = dashRes.data;
+                if (STATE.user.role === 'PANITIA') STATE.events = initRes.events.filter(e => e.id_event === STATE.user.akses_event);
+                else STATE.events = initRes.events;
+
+                if (STATE.currentEventId) bukaEventDetail(STATE.currentEventId);
+                else bukaBerandaEvent();
+            } else { Swal.fire('Error', dashRes.message || "Gagal sinkronisasi data", 'error'); }
+            showLoader(false);
+        }
+
+        function formatIndoDate(dateString) {
+            if(!dateString) return "-";
+            if(dateString.includes("-") && dateString.split("-")[0].length === 4) {
+                const parts = dateString.split("-"); return `${parts[2]}-${parts[1]}-${parts[0]}`; 
+            } return dateString;
+        }
+
+        function renderDashboardEvents() {
+            const container = document.getElementById('containerEvents'); container.innerHTML = '';
+            if(STATE.events.length === 0) { document.getElementById('emptyEvents').classList.remove('hidden'); document.getElementById('emptyEvents').classList.add('flex'); return; }
+            const cMapHex = { 'teal': '#14b8a6', 'blue': '#3b82f6', 'indigo': '#6366f1', 'purple': '#a855f7', 'rose': '#f43f5e', 'emerald': '#10b981', 'orange': '#f97316', 'red': '#ef4444' };
+
+            STATE.events.forEach(ev => {
+                const hexWarna = cMapHex[ev.warna.toLowerCase()] || '#3b82f6';
+                const pendaftarEventIni = STATE.rawData.filter(d => d.id_event === ev.id_event);
+                const countPending = pendaftarEventIni.filter(d => d.status === 'PENDING').length;
+                let textInfo = countPending > 0 
+                    ? `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-[10px] font-extrabold border border-amber-200 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div> ${countPending} Antrean Masuk</span>` 
+                    : `<span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Antrean Kosong</span>`;
+
+                let visualVisual = `<div style="background-color:${hexWarna}" class="w-full h-36 flex items-center justify-center text-white"><i data-lucide="${ev.ikon}" class="w-14 h-14 opacity-90"></i></div>`;
+                if(ev.thumbnail) visualVisual = `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">`;
+
+                container.insertAdjacentHTML('beforeend', `
+                <div onclick="bukaEventDetail('${ev.id_event}')" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full">
+                    ${visualVisual}
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</div>
+                        <h4 class="text-xl font-black text-slate-800 leading-tight mb-4 group-hover:text-brand-600 transition-colors">${ev.nama_event}</h4>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between"><div>${textInfo}</div><div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="settings-2" class="w-4 h-4"></i></div></div>
+                    </div>
+                </div>`);
+            });
+            lucide.createIcons();
+        }
+
+        function bukaEventDetail(id_event) {
+            STATE.currentEventId = id_event;
+            const ev = STATE.events.find(e => e.id_event === id_event);
+            STATE.allData = STATE.rawData.filter(d => d.id_event === id_event);
+
+            document.getElementById('sideContextEventName').innerText = ev.nama_event;
+            document.getElementById('menuEventContext').classList.remove('hidden'); document.getElementById('menuEventContext').classList.add('flex');
+
+            populateFilters();
+            renderDashboard();
+            renderTabelVerifikasi();
+            renderTabelRekap();
+            
+            switchView('dashboard');
+        }
+
+        function populateFilters() {
+            const filterSekolah = document.getElementById('filterSekolah');
+            const filterCabang = document.getElementById('filterCabang');
+            const sekolahSet = new Set(); const cabangSet = new Set();
+            STATE.allData.forEach(d => { sekolahSet.add(d.asal_sekolah); cabangSet.add(d.cabang); });
+            filterSekolah.innerHTML = '<option value="ALL">Semua Instansi</option>';
+            Array.from(sekolahSet).sort().forEach(s => filterSekolah.innerHTML += `<option value="${s}">${s}</option>`);
+            filterCabang.innerHTML = '<option value="ALL">Semua Cabang Lomba</option>';
+            Array.from(cabangSet).sort().forEach(c => filterCabang.innerHTML += `<option value="${c}">${c}</option>`);
+        }
+
+        function renderDashboard() {
+            let total = STATE.allData.length;
+            let setuju = STATE.allData.filter(d => d.status === 'DISETUJUI').length;
+            let pending = STATE.allData.filter(d => d.status === 'PENDING').length;
+            let draft = STATE.allData.filter(d => d.status === 'DRAFT').length;
+            let revisi = STATE.allData.filter(d => d.status === 'REVISI').length;
+            
+            let lockedTotal = setuju + pending; 
+            let unsubmittedTotal = draft + revisi;
+
+            let sekolahSet = new Set(STATE.allData.map(d => d.asal_sekolah));
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statSetuju').innerText = setuju;
+            document.getElementById('statPending').innerText = pending;
+            document.getElementById('statSekolah').innerText = sekolahSet.size;
+
+            const alertDraft = document.getElementById('alertDraft');
+            if(unsubmittedTotal > 0) {
+                document.getElementById('statDraft').innerText = unsubmittedTotal;
+                alertDraft.classList.remove('hidden'); alertDraft.classList.add('flex');
+            } else { alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); }
+
+            let progressPct = total > 0 ? Math.round((lockedTotal / total) * 100) : 0;
+            document.getElementById('progressPercentage').innerText = progressPct + '%';
+            document.getElementById('progressBar').style.width = progressPct + '%';
+            document.getElementById('progressFinalText').innerText = lockedTotal + " Sudah Terkunci / Final";
+            document.getElementById('progressDraftText').innerText = unsubmittedTotal + " Masih Draf / Revisi";
+
+            renderCharts(setuju, pending, revisi, draft);
+        }
+
+        function renderCharts(cSetuju, cPending, cRevisi, cDraft) {
+            if(chartStatusInstance) chartStatusInstance.destroy();
+            if(chartCabangInstance) chartCabangInstance.destroy();
+            if(chartSekolahInstance) chartSekolahInstance.destroy();
+
+            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+            chartStatusInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Disetujui', 'Pending Verif', 'Revisi', 'Masih Draf'],
+                    datasets: [{
+                        data: [cSetuju, cPending, cRevisi, cDraft],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#cbd5e1'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font:{size: 10} } } } }
+            });
+
+            const dataValid = STATE.allData.filter(d => d.status !== 'DRAFT');
+            
+            const cabMap = {}; const sekMap = {};
+            dataValid.forEach(d => {
+                cabMap[d.cabang] = (cabMap[d.cabang] || 0) + 1;
+                sekMap[d.asal_sekolah] = (sekMap[d.asal_sekolah] || 0) + 1;
+            });
+
+            const lblCabang = Object.keys(cabMap); const valCabang = Object.values(cabMap);
+            const ctxCabang = document.getElementById('chartCabang').getContext('2d');
+            chartCabangInstance = new Chart(ctxCabang, {
+                type: 'bar',
+                data: {
+                    labels: lblCabang,
+                    datasets: [{ label: 'Jumlah Pendaftar', data: valCabang, backgroundColor: '#3b82f6', borderRadius: 6 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: {display: false} } }
+                }
+            });
+
+            const arrSekolah = Object.keys(sekMap).map(k => ({nama: k, jumlah: sekMap[k]}));
+            arrSekolah.sort((a,b) => b.jumlah - a.jumlah);
+            
+            const topSekolah = arrSekolah.slice(0, 10); 
+            const ctxSekolah = document.getElementById('chartSekolah').getContext('2d');
+            chartSekolahInstance = new Chart(ctxSekolah, {
+                type: 'bar',
+                data: {
+                    labels: topSekolah.map(s => s.nama),
+                    datasets: [{ label: 'Peserta Disubmit', data: topSekolah.map(s => s.jumlah), backgroundColor: '#8b5cf6', borderRadius: 4 }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } }, y: { grid: {display: false}, ticks: { font: {size:10} } } }
+                }
+            });
+        }
+
+        function renderTabelVerifikasi() {
+            const tBody = document.getElementById('tableVerifBody'); tBody.innerHTML = '';
+            document.getElementById('chkAllVerif').checked = false; 
+            
+            const antreanData = [...STATE.allData.filter(d => d.status === 'PENDING')].reverse();
+            
+            document.getElementById('countAntrean').innerText = antreanData.length;
+            updateTombolBulk(); 
+
+            if(antreanData.length === 0) {
+                tBody.innerHTML = `<tr><td colspan="6" class="py-16 text-center"><div class="flex flex-col items-center"><i data-lucide="check-circle-2" class="w-14 h-14 text-emerald-200 mb-3"></i><p class="text-slate-500 font-bold text-sm">Hebat! Tidak ada antrean verifikasi saat ini.</p></div></td></tr>`;
+                lucide.createIcons(); return;
+            }
+
+            antreanData.forEach((d, idx) => {
+                const dateWaktu = new Date(d.waktu).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                tBody.innerHTML += `
+                    <tr class="group hover:bg-brand-50/30 transition-colors">
+                        <td class="text-center"><input type="checkbox" onchange="updateTombolBulk()" class="chk-verif w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" value="${d.id_daftar}"></td>
+                        <td class="text-center font-bold text-slate-400">${idx + 1}</td>
+                        <td>
+                            <div class="font-extrabold text-slate-800 text-sm">${d.nama}</div>
+                            <div class="text-[10px] font-bold text-brand-600 mt-0.5 uppercase tracking-wide flex items-center gap-1"><i data-lucide="school" class="w-3 h-3"></i> ${d.asal_sekolah}</div>
+                        </td>
+                        <td>
+                            <div class="font-bold text-sm text-slate-700">${d.cabang}</div>
+                            <div class="text-[10px] font-extrabold text-slate-500 mt-1 uppercase tracking-widest px-2 py-0.5 bg-slate-100 border border-slate-200 rounded w-fit">${d.gender || 'Umum'}</div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2 text-slate-500"><i data-lucide="clock" class="w-4 h-4"></i> <span class="text-xs font-semibold">${dateWaktu} WIB</span></div>
+                        </td>
+                        <td>
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="aksiVerifikasi('${d.id_daftar}', 'DISETUJUI')" class="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-xl font-bold text-xs transition-all border border-emerald-200 hover:shadow-md active:scale-95" title="Setujui Data"><i data-lucide="check" class="w-4 h-4"></i> Setujui</button>
+                                <button onclick="aksiVerifikasi('${d.id_daftar}', 'REVISI')" class="flex items-center justify-center p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl font-bold transition-all border border-red-200 hover:shadow-md active:scale-95" title="Kembalikan ke Sekolah"><i data-lucide="corner-up-left" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+            lucide.createIcons();
+        }
+
+        function toggleSemuaCentang(source) {
+            const checkboxes = document.querySelectorAll('.chk-verif');
+            checkboxes.forEach(chk => chk.checked = source.checked);
+            updateTombolBulk();
+        }
+
+        function updateTombolBulk() {
+            const checkedCount = document.querySelectorAll('.chk-verif:checked').length;
+            const btnBulk = document.getElementById('btnSetujuiMasal');
+            document.getElementById('countSelected').innerText = checkedCount;
+            if(checkedCount > 0) { btnBulk.classList.remove('hidden'); btnBulk.classList.add('flex'); } 
+            else { btnBulk.classList.add('hidden'); btnBulk.classList.remove('flex'); }
+        }
+
+        function eksekusiMasal() {
+            const checkboxes = document.querySelectorAll('.chk-verif:checked');
+            if (checkboxes.length === 0) return;
+
+            const ids = Array.from(checkboxes).map(c => c.value);
+            
+            Swal.fire({
+                title: `Setujui ${ids.length} Peserta?`,
+                html: "Sistem akan memproses persetujuan dokumen ini secara masal ke dalam Server.",
+                icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Sahkan Semua', confirmButtonColor: '#10b981', borderRadius: '1.5rem'
+            }).then(async (r) => {
+                if (r.isConfirmed) {
+                    Swal.fire({ title: 'Memproses Masal...', html: `Menyimpan data <b>1</b> dari ${ids.length}...`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    
+                    let successCount = 0;
+                    for (let i = 0; i < ids.length; i++) {
+                        Swal.update({ html: `Menyimpan data <b>${i+1}</b> dari ${ids.length}...` });
+                        const payload = { id_daftar: ids[i], user: STATE.user, status_baru: 'DISETUJUI', catatan: '' };
+                        const res = await callAPI('verifikasiData', payload);
+                        if(res.status === 'success') successCount++;
+                    }
+
+                    Swal.fire({ icon: 'success', title: 'Selesai!', text: `${successCount} data berhasil disetujui.`, timer: 2000, showConfirmButton: false });
+                    muatDataServer(true); 
+                }
+            });
+        }
+
+        function aksiVerifikasi(idDaftar, statusBaru) {
+            if (statusBaru === 'DISETUJUI') {
+                Swal.fire({ title: 'Verifikasi Valid?', html: "Data peserta ini akan disetujui.", icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Sahkan', confirmButtonColor: '#10b981', borderRadius: '1.5rem' }).then((r) => { if (r.isConfirmed) eksekusiVerifApiIndividual(idDaftar, statusBaru, ""); });
+            } else {
+                Swal.fire({ title: 'Kembalikan untuk Revisi', input: 'textarea', inputLabel: 'Tuliskan catatan perbaikan (Wajib):', showCancelButton: true, confirmButtonText: 'Kirim Catatan', confirmButtonColor: '#ef4444', borderRadius: '1.5rem', inputValidator: (value) => { if (!value) return 'Catatan revisi tidak boleh kosong!' } }).then((r) => { if (r.isConfirmed) eksekusiVerifApiIndividual(idDaftar, statusBaru, r.value); });
+            }
+        }
+
+        async function eksekusiVerifApiIndividual(idDaftar, statusBaru, catatan) {
+            showLoader(true);
+            const payload = { id_daftar: idDaftar, user: STATE.user, status_baru: statusBaru, catatan: catatan };
+            const res = await callAPI('verifikasiData', payload);
+            if(res.status === 'success') { Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, timer: 1500, showConfirmButton: false }); muatDataServer(false); } 
+            else { showLoader(false); Swal.fire('Gagal', res.message, 'error'); }
+        }
+
+        function renderTabelRekap() {
+            const fSekolah = document.getElementById('filterSekolah').value;
+            const fCabang = document.getElementById('filterCabang').value;
+            const fStatus = document.getElementById('filterStatus').value;
+            
+            let data = [...STATE.allData].reverse(); 
+
+            if(fSekolah !== 'ALL') data = data.filter(d => d.asal_sekolah === fSekolah);
+            if(fCabang !== 'ALL') data = data.filter(d => d.cabang === fCabang);
+            if(fStatus !== 'ALL') data = data.filter(d => d.status === fStatus);
+
+            STATE.filteredData = data; 
+            const tBody = document.getElementById('tableRekapBody'); tBody.innerHTML = '';
+
+            if(data.length === 0) {
+                tBody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-slate-400 font-medium">Data kosong dengan filter tersebut.</td></tr>`; return;
+            }
+
+            data.forEach((d, idx) => {
+                let badgeClass = d.status === 'DISETUJUI' ? "bg-emerald-100 text-emerald-700 border-emerald-200" : d.status === 'PENDING' ? "bg-amber-100 text-amber-700 border-amber-200" : d.status === 'REVISI' ? "bg-red-100 text-red-700 border-red-200" : "bg-slate-200 text-slate-500 border-slate-300";
+
+                tBody.innerHTML += `
+                    <tr>
+                        <td class="text-center font-bold">${idx + 1}</td>
+                        <td class="font-extrabold text-slate-800 text-sm">${d.asal_sekolah}</td>
+                        <td><div class="font-bold text-slate-800">${d.nama}</div><div class="text-[11px] font-medium text-slate-500 mt-0.5">NISN: ${d.nisn} | KLS: ${d.kelas}</div></td>
+                        <td class="text-center font-bold">${d.jk === 'Laki-laki' ? 'L' : (d.jk === 'Perempuan' ? 'P' : '-')}</td>
+                        <td class="font-bold text-sm text-slate-700">${d.cabang}</td>
+                        <td><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-extrabold uppercase tracking-widest text-slate-500">${d.gender || 'Umum'}</span></td>
+                        <td class="text-center"><span class="px-2.5 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${badgeClass}">${d.status}</span></td>
+                    </tr>`;
+            });
+        }
+
+        function exportToCSV() {
+            if (STATE.filteredData.length === 0) { Swal.fire('Kosong', 'Tidak ada data untuk diekspor.', 'info'); return; }
+            const eventInfo = STATE.events.find(e => e.id_event === STATE.currentEventId);
+            
+            const headers = ['No', 'ID Daftar', 'Event', 'Asal Sekolah', 'Nama Peserta', 'Jenis Kelamin', 'NISN', 'Tempat Tgl Lahir', 'Kelas', 'Cabang Lomba', 'Kategori', 'Status', 'Catatan'];
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+
+            STATE.filteredData.forEach((d, idx) => {
+                let row = [ idx + 1, d.id_daftar, `"${eventInfo.nama_event}"`, `"${d.asal_sekolah}"`, `"${d.nama}"`, d.jk, `="${d.nisn}"`, `"${d.ttl}"`, `"${d.kelas}"`, `"${d.cabang}"`, d.gender, d.status, `"${d.catatan || ''}"` ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent); const link = document.createElement("a");
+            link.setAttribute("href", encodedUri); link.setAttribute("download", `Data_${eventInfo.id_event}_${new Date().getTime()}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
