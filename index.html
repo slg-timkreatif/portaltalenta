@@ -58,8 +58,6 @@
                 display: flex; justify-content: space-between; align-items: flex-start; 
                 padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; text-align: right; 
             }
-            
-            /* Penyesuaian Area Bawah Kartu */
             .mobile-card-table td:last-child { 
                 border-bottom: none; justify-content: flex-end; padding-top: 0.75rem; 
                 margin-top: 0.5rem; border-top: 1px dashed #e2e8f0; 
@@ -401,8 +399,40 @@
             isClosed: false 
         };
 
+        // KAMUS WARNA DINAMIS TAILWIND (Untuk Ikon & Border Kartu)
+        const TW_COLORS = {
+            'teal': { bg: 'bg-teal-50', text: 'text-teal-600', border: 'border-teal-200', hoverBorder: 'hover:border-teal-400', groupHoverBg: 'group-hover:bg-teal-500' },
+            'blue': { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hoverBorder: 'hover:border-blue-400', groupHoverBg: 'group-hover:bg-blue-500' },
+            'indigo': { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-200', hoverBorder: 'hover:border-indigo-400', groupHoverBg: 'group-hover:bg-indigo-500' },
+            'purple': { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hoverBorder: 'hover:border-purple-400', groupHoverBg: 'group-hover:bg-purple-500' },
+            'rose': { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', hoverBorder: 'hover:border-rose-400', groupHoverBg: 'group-hover:bg-rose-500' },
+            'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-400', groupHoverBg: 'group-hover:bg-emerald-500' },
+            'orange': { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', hoverBorder: 'hover:border-orange-400', groupHoverBg: 'group-hover:bg-orange-500' },
+            'red': { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200', hoverBorder: 'hover:border-red-400', groupHoverBg: 'group-hover:bg-red-500' },
+            'gray': { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-200', hoverBorder: 'hover:border-slate-400', groupHoverBg: 'group-hover:bg-slate-500' }
+        };
+
         // ==========================================
-        // 1. ROUTING SYSTEM (HASH)
+        // FUNGSI HELPER (FORMAT DATE & CEK DITUTUP)
+        // ==========================================
+        function formatIndoDate(dateString) {
+            if(!dateString) return "-";
+            if(dateString.includes("-") && dateString.split("-")[0].length === 4) {
+                const parts = dateString.split("-"); return `${parts[2]}-${parts[1]}-${parts[0]}`; 
+            } return dateString;
+        }
+
+        function cekEventDitutup(dateStr) {
+            if(!dateStr || dateStr === "-") return false;
+            const parts = dateStr.split("-"); 
+            if(parts.length !== 3) return false;
+            const deadline = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
+            const now = new Date();
+            return now > deadline;
+        }
+
+        // ==========================================
+        // ROUTING SYSTEM (HASH)
         // ==========================================
         window.addEventListener('hashchange', handleHashRouting);
         
@@ -425,7 +455,7 @@
         }
 
         // ==========================================
-        // 2. INISIALISASI & LOGIN
+        // INISIALISASI & LOGIN
         // ==========================================
         window.onload = () => { 
             callAPI('getSettings').then(res => {
@@ -500,7 +530,7 @@
         }
 
         // ==========================================
-        // 3. CORE SYSTEM (MODAL & LOAD DATA)
+        // CORE SYSTEM (MODAL & LOAD DATA)
         // ==========================================
         function bukaLinkDinamis(kunci, namaFitur) {
             if(STATE.settings && STATE.settings[kunci] && STATE.settings[kunci].trim() !== "") window.open(STATE.settings[kunci], '_blank');
@@ -544,7 +574,7 @@
         }
 
         // ==========================================
-        // 4. UI: BERANDA EVENT
+        // UI: BERANDA EVENT
         // ==========================================
         function showBerandaUI() {
             STATE.currentEventId = null; STATE.currentCabang = null;
@@ -590,7 +620,7 @@
         }
 
         // ==========================================
-        // 5. UI: DETAIL EVENT (DAFTAR CABANG)
+        // UI: DETAIL EVENT (DAFTAR CABANG)
         // ==========================================
         function showEventDetailUI(idEvent) {
             STATE.currentEventId = idEvent; STATE.currentCabang = null; 
@@ -644,25 +674,31 @@
 
             cabangEvent.forEach(c => {
                 const terdaftar = pendaftarEventIni.filter(d => d.cabang === c.nama_cabang);
-                let bgClass = terdaftar.length > 0 ? "bg-white border-brand-200 shadow-sm hover:border-brand-400" : "bg-white border-slate-200 shadow-sm hover:border-slate-300 opacity-90";
-                let iconWarna = terdaftar.length > 0 ? "bg-brand-50 text-brand-600" : "bg-slate-50 text-slate-400";
+                
+                // PENGGUNAAN WARNA DINAMIS DARI SPREADSHEET
+                const wKey = String(c.warna).toLowerCase().trim();
+                const theme = TW_COLORS[wKey] || TW_COLORS['blue']; // Default ke biru jika warna tidak dikenal
+                
+                let bgClass = terdaftar.length > 0 ? `bg-white ${theme.border} shadow-sm ${theme.hoverBorder}` : "bg-white border-slate-200 shadow-sm hover:border-slate-300 opacity-90";
+                let iconWarna = terdaftar.length > 0 ? `${theme.bg} ${theme.text}` : "bg-slate-50 text-slate-400";
+                let hoverInject = terdaftar.length > 0 ? theme.groupHoverBg : "group-hover:bg-slate-500";
                 
                 let statusTeks = terdaftar.length > 0 
-                    ? `<div class="flex items-baseline md:flex-col gap-1 md:gap-0"><span class="text-sm md:text-xs font-black text-brand-600">${terdaftar.length}</span> <span class="text-[10px] text-slate-400 font-bold">Peserta</span></div>` 
+                    ? `<div class="flex items-baseline md:flex-col gap-1 md:gap-0"><span class="text-sm md:text-xs font-black ${theme.text}">${terdaftar.length}</span> <span class="text-[10px] text-slate-400 font-bold">Peserta</span></div>` 
                     : `<span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-2 py-1 rounded md:bg-transparent md:p-0">Belum ada</span>`;
 
                 container.innerHTML += `
                     <div onclick="window.location.hash = '#cabang-' + encodeURIComponent('${c.nama_cabang}') + '|' + encodeURIComponent('${c.tipe}')" class="flex flex-row md:flex-col items-center md:items-start p-4 md:p-5 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer ${bgClass} group">
-                        <div class="w-12 h-12 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors mr-4 md:mr-0 md:mb-4 group-hover:bg-brand-500 group-hover:text-white ${iconWarna}">
+                        <div class="w-12 h-12 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors mr-4 md:mr-0 md:mb-4 ${hoverInject} group-hover:text-white ${iconWarna}">
                             <i data-lucide="${c.ikon || 'award'}" class="w-6 h-6 md:w-5 md:h-5"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-extrabold text-sm text-slate-800 leading-tight mb-0.5 md:mb-1 group-hover:text-brand-600 truncate">${c.nama_cabang}</h4>
+                            <h4 class="font-extrabold text-sm text-slate-800 leading-tight mb-0.5 md:mb-1 group-hover:${theme.text} truncate">${c.nama_cabang}</h4>
                             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.tipe === 'PA/PI' ? 'Putra / Putri' : 'Umum / Tim'}</p>
                         </div>
                         <div class="mt-0 md:mt-auto pt-0 md:pt-3 border-none md:border-t md:border-slate-100 flex items-center justify-end md:justify-between w-auto md:w-full ml-3 md:ml-0 shrink-0">
                             <div class="mr-3 md:mr-0 text-right md:text-left">${statusTeks}</div>
-                            <i data-lucide="chevron-right" class="w-5 h-5 md:w-4 md:h-4 text-slate-300 group-hover:text-brand-500"></i>
+                            <i data-lucide="chevron-right" class="w-5 h-5 md:w-4 md:h-4 text-slate-300 group-hover:${theme.text}"></i>
                         </div>
                     </div>`;
             });
@@ -670,7 +706,7 @@
         }
 
         // ==========================================
-        // 6. UI: RUANG KERJA CABANG (TABEL)
+        // UI: RUANG KERJA CABANG (TABEL)
         // ==========================================
         function showRuangCabangUI(namaCabang, tipe) {
             STATE.currentCabang = namaCabang === 'SEMUA' ? null : namaCabang; STATE.currentTipe = tipe;
@@ -727,7 +763,6 @@
 
                 let catatanHtml = d.catatan ? `<div class="mt-2 md:mt-1 text-[10px] text-red-600 font-medium bg-red-50 p-2 md:p-1.5 rounded-lg border border-red-100 w-full text-left"><b>Catatan Panitia:</b> ${d.catatan}</div>` : '';
                 
-                // MUNCULKAN TOMBOL LINK BERKAS JIKA ADA
                 let linkHtml = d.link_syarat ? `<a href="${d.link_syarat}" target="_blank" class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 md:py-0.5 rounded border border-blue-100 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1 mt-1.5 md:mt-0 w-full md:w-fit md:inline-flex ml-0 md:ml-1.5"><i data-lucide="link" class="w-3 h-3"></i> Ada Berkas</a>` : '';
 
                 tBody.innerHTML += `
@@ -761,7 +796,7 @@
         }
 
         // ==========================================
-        // 7. FUNGSI FORMULIR (TAMBAH / EDIT DATA)
+        // FUNGSI FORMULIR & API
         // ==========================================
         function bukaFormInput(idEdit = null) {
             document.getElementById('formPendaftaran').reset();
@@ -771,7 +806,6 @@
             if(STATE.currentTipe === 'PA/PI') { bx.classList.remove('hidden'); bx.classList.add('block'); } 
             else { bx.classList.add('hidden'); bx.classList.remove('block'); }
 
-            // Deteksi Wajib Lampiran berdasarkan cabang saat ini
             let targetCabang = idEdit ? (STATE.dashboardData.find(d => d.id_daftar === idEdit)?.cabang || STATE.currentCabang) : STATE.currentCabang;
             const cabangInfo = STATE.cabangs.find(c => c.id_event === STATE.currentEventId && c.nama_cabang === targetCabang);
             const bxLampiran = document.getElementById('boxLampiran');
@@ -790,7 +824,7 @@
                     document.getElementById('inNama').value = eData.nama; document.getElementById('inNisn').value = eData.nisn; document.getElementById('inKelas').value = eData.kelas;
                     if(STATE.currentTipe === 'PA/PI' && eData.gender) document.getElementById('inGenderKat').value = eData.gender;
                     if(eData.jk) document.getElementById('inJenisKelamin').value = eData.jk;
-                    if(eData.link_syarat) inLink.value = eData.link_syarat; // Tarik data link jika ada
+                    if(eData.link_syarat) inLink.value = eData.link_syarat; 
                     if(eData.ttl) {
                         const parts = eData.ttl.split(", "); document.getElementById('inTempatLahir').value = parts[0] || "";
                         if(parts[1]) { 
@@ -819,7 +853,6 @@
 
             const ttlGabungan = `${document.getElementById('inTempatLahir').value}, ${formatIndoDate(document.getElementById('inTanggalLahir').value)}`;
             
-            // Tambahkan link_syarat ke Payload
             const payload = { 
                 id_daftar: document.getElementById('inIdDaftar').value, 
                 id_event: STATE.currentEventId, 
@@ -852,9 +885,6 @@
             }
         }
 
-        // ==========================================
-        // 8. FUNGSI HAPUS, KUNCI, & CETAK
-        // ==========================================
         function hapusDaftar(idDaftar, nama) {
             Swal.fire({ title: 'Hapus Draft?', html: `Data peserta <b>${nama}</b> akan dihapus permanen.`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal', confirmButtonColor: '#ef4444', borderRadius: '1.5rem' }).then(async (r) => {
                 if (r.isConfirmed) {
