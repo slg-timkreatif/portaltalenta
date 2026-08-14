@@ -43,7 +43,7 @@
             .mobile-card-table tr:hover td { background-color: transparent; }
             .mobile-card-table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; text-align: right; }
             
-            /* Penyesuaian Area Bawah Kartu (LOCKED / TOMBOL AKSI) */
+            /* Penyesuaian Area Bawah Kartu */
             .mobile-card-table td:last-child { 
                 border-bottom: none; justify-content: flex-end; padding-top: 0.75rem; 
                 margin-top: 0.5rem; border-top: 1px dashed #e2e8f0; 
@@ -87,7 +87,7 @@
         
         <!-- SIDEBAR DESKTOP -->
         <aside class="hidden md:flex flex-col w-[280px] bg-white border-r border-slate-200 h-full shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
-            <div class="p-6 border-b border-slate-100 flex items-center gap-3 cursor-pointer hover:bg-slate-50 transition-colors" onclick="kembaliKeBeranda()">
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3 cursor-pointer hover:bg-slate-50 transition-colors" onclick="navigasiMundur('#beranda')">
                 <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="medal" class="w-5 h-5"></i></div>
                 <div>
                     <h1 class="font-extrabold text-[15px] text-slate-800 leading-tight">PORTAL TALENTA</h1>
@@ -105,7 +105,7 @@
             <nav class="flex-1 overflow-y-auto py-6 flex flex-col justify-start">
                 <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest px-6 mb-2">Menu Utama</p>
                 <ul class="space-y-1 px-3 mb-8">
-                    <li><button onclick="kembaliKeBeranda()" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-sm font-semibold">Beranda Event</span></button></li>
+                    <li><button onclick="navigasiMundur('#beranda')" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="text-sm font-semibold">Beranda Event</span></button></li>
                 </ul>
 
                 <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest px-6 mb-2">Pintasan Informasi</p>
@@ -126,7 +126,7 @@
             
             <!-- MOBILE HEADER TOP -->
             <header class="md:hidden bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="kembaliKeBeranda()">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="navigasiMundur('#beranda')">
                     <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white shadow-sm"><i data-lucide="medal" class="w-4 h-4"></i></div>
                     <div>
                         <h2 class="font-extrabold text-slate-800 leading-tight truncate max-w-[150px] text-sm">PORTAL TALENTA</h2>
@@ -162,10 +162,10 @@
                     </div>
                 </div>
 
-                <!-- LEVEL 2: DASHBOARD CABANG (FOKUS GRID) -->
+                <!-- LEVEL 2: DASHBOARD CABANG (FOKUS GRID/LIST CABANG) -->
                 <div id="view-dashboard-cabang" class="fade-in max-w-5xl mx-auto hidden flex-col pb-10">
                     <div class="mb-6">
-                        <button onclick="kembaliKeBeranda()" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
+                        <button onclick="navigasiMundur('#beranda')" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
                             <i data-lucide="arrow-left" class="w-4 h-4"></i> Beranda
                         </button>
                     </div>
@@ -185,7 +185,6 @@
                                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH BUKTI
                             </button>
                             <div class="flex flex-col w-full md:w-auto">
-                                <!-- Tombol Kunci & Kirim (Dipertahankan Full Width di Mobile karena ini CTA Utama) -->
                                 <button id="btnLockEvent" onclick="kunciPendaftaran()" class="w-full md:w-auto px-6 py-3 md:py-4 bg-emerald-600 text-white rounded-xl font-extrabold shadow-lg shadow-emerald-600/20 hover:-translate-y-1 hover:bg-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-2 hidden">
                                     <i data-lucide="lock" class="w-5 h-5"></i> KUNCI & KIRIM SEMUA
                                 </button>
@@ -197,21 +196,21 @@
                     <!-- Judul Section -->
                     <div class="flex items-center justify-between mb-4 px-2">
                         <h3 class="text-lg font-black text-slate-800">Daftar Cabang Lomba</h3>
-                        <button onclick="bukaRuangCabang('SEMUA', 'ALL')" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1">
+                        <button onclick="window.location.hash = '#cabang-' + encodeURIComponent('SEMUA')" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1">
                             <i data-lucide="users" class="w-4 h-4"></i> Lihat Semua
                         </button>
                     </div>
 
-                    <!-- Grid Kartu Cabang Lomba -->
-                    <div id="containerGridCabang" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <!-- Kartu akan di-render di sini -->
+                    <!-- Layout Otomatis: List di HP (1 kolom), Grid di Desktop (2-4 kolom) -->
+                    <div id="containerGridCabang" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                        <!-- Kartu Cabang akan di-render di sini -->
                     </div>
                 </div>
 
                 <!-- LEVEL 3: RUANG KERJA CABANG (FOKUS TABEL) -->
                 <div id="view-ruang-cabang" class="slide-in-right max-w-6xl mx-auto hidden flex-col pb-10">
                     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-                        <button onclick="tutupRuangCabang()" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
+                        <button onclick="navigasiMundur('#event-' + STATE.currentEventId)" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
                             <i data-lucide="arrow-left" class="w-4 h-4"></i> Daftar Cabang
                         </button>
                         <h2 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
@@ -231,7 +230,7 @@
                                 <input type="text" id="inCariPeserta" oninput="renderTabelDraft()" placeholder="Cari nama peserta / NISN..." class="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all shadow-sm">
                             </div>
                             
-                            <!-- Penyesuaian Proporsi Tombol Mobile (Justify-Between & Tidak Melar) -->
+                            <!-- Penyesuaian Proporsi Tombol Mobile -->
                             <div class="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
                                 <div class="bg-white text-slate-600 px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 shadow-sm flex items-center gap-2">
                                     <i data-lucide="users" class="w-4 h-4 text-brand-500"></i> <span class="hidden sm:inline">Total:</span> <span id="countPendaftarTabel" class="text-brand-600 font-black text-sm">0</span>
@@ -265,7 +264,7 @@
 
         <!-- UX MOBILE: BOTTOM NAVIGATION BAR -->
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-[45] flex justify-between px-1 py-1 pb-safe shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-            <button onclick="kembaliKeBeranda()" class="flex flex-col items-center justify-center p-2 w-1/4 text-brand-600">
+            <button onclick="navigasiMundur('#beranda')" class="flex flex-col items-center justify-center p-2 w-1/4 text-brand-600">
                 <i data-lucide="home" class="w-5 h-5 mb-1"></i>
                 <span class="text-[9px] font-bold">Beranda</span>
             </button>
@@ -398,6 +397,35 @@
             return now > deadline;
         }
 
+        // ==========================================
+        // SISTEM ROUTING (HASH / TOMBOL BACK HP)
+        // ==========================================
+        window.addEventListener('hashchange', handleHashRouting);
+
+        function handleHashRouting() {
+            const hash = window.location.hash;
+            if (hash === '' || hash === '#beranda') {
+                showBerandaUI();
+            } else if (hash.startsWith('#event-')) {
+                const id = hash.replace('#event-', '');
+                showEventDetailUI(id);
+            } else if (hash.startsWith('#cabang-')) {
+                if (!STATE.currentEventId) { window.location.replace('#beranda'); return; }
+                const parts = hash.replace('#cabang-', '').split('|');
+                const nama = decodeURIComponent(parts[0]);
+                const tipe = parts.length > 1 ? decodeURIComponent(parts[1]) : '';
+                showRuangCabangUI(nama, tipe);
+            }
+        }
+
+        function navigasiMundur(fallbackHash) {
+            if (window.history.length > 2) { window.history.back(); } 
+            else { window.location.hash = fallbackHash; }
+        }
+
+        // ==========================================
+        // PROSES LOGIN & INISIALISASI
+        // ==========================================
         window.onload = () => { 
             const savedUser = localStorage.getItem('talentaUser'); 
             if (savedUser) { 
@@ -440,7 +468,11 @@
             if(document.getElementById('sideInstansi')) document.getElementById('sideInstansi').innerText = STATE.user.instansi;
             if(document.getElementById('sideRole')) document.getElementById('sideRole').innerText = STATE.user.role; 
             if(document.getElementById('mobInstansi')) document.getElementById('mobInstansi').innerText = STATE.user.instansi;
-            muatDataServer();
+            
+            muatDataServer().then(() => {
+                if(window.location.hash === '') { window.location.replace('#beranda'); } 
+                else { handleHashRouting(); }
+            });
         }
 
         async function muatDataServer(forceRefresh = false) {
@@ -458,13 +490,17 @@
 
             document.getElementById('loaderData').classList.add('hidden'); document.getElementById('loaderData').classList.remove('flex');
             
-            if(STATE.currentEventId && STATE.currentCabang) { 
-                bukaRuangCabang(STATE.currentCabang, STATE.currentTipe);
-            } else if (STATE.currentEventId) {
-                bukaEventDetail(STATE.currentEventId);
-            } else { 
-                renderDashboardEvents(); 
-            }
+            if (forceRefresh) { handleHashRouting(); } // Restore view if refreshed manually
+        }
+
+        // ==========================================
+        // UI RENDERING LOGIC (BERANDA)
+        // ==========================================
+        function showBerandaUI() {
+            STATE.currentEventId = null; STATE.currentCabang = null;
+            document.getElementById('view-dashboard-cabang').classList.add('hidden'); document.getElementById('view-dashboard-cabang').classList.remove('flex'); 
+            document.getElementById('view-ruang-cabang').classList.add('hidden'); document.getElementById('view-ruang-cabang').classList.remove('flex'); 
+            renderDashboardEvents(); 
         }
 
         function renderDashboardEvents() {
@@ -493,7 +529,7 @@
                 if(ev.thumbnail) visualVisual = `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">`;
 
                 container.insertAdjacentHTML('beforeend', `
-                <div onclick="bukaEventDetail('${ev.id_event}')" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full relative">
+                <div onclick="window.location.hash = '#event-${ev.id_event}'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full relative">
                     ${badgeTertutup}
                     ${visualVisual}
                     <div class="p-6 flex-1 flex flex-col">
@@ -509,11 +545,14 @@
             lucide.createIcons();
         }
 
-        function bukaEventDetail(idEvent) {
-            STATE.currentEventId = idEvent; 
-            STATE.currentCabang = null; 
-            
+        // ==========================================
+        // UI RENDERING LOGIC (DASHBOARD CABANG)
+        // ==========================================
+        function showEventDetailUI(idEvent) {
+            STATE.currentEventId = idEvent; STATE.currentCabang = null; 
             const ev = STATE.events.find(e => e.id_event === idEvent);
+            if(!ev) { window.location.replace('#beranda'); return; }
+
             document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex');
             document.getElementById('view-ruang-cabang').classList.add('hidden'); document.getElementById('view-ruang-cabang').classList.remove('flex');
             
@@ -527,13 +566,6 @@
             
             updateStatusVisualEvent(ev);
             renderGridCabangCard();
-        }
-
-        function kembaliKeBeranda() { 
-            STATE.currentEventId = null; STATE.currentCabang = null;
-            document.getElementById('view-dashboard-cabang').classList.add('hidden'); document.getElementById('view-dashboard-cabang').classList.remove('flex'); 
-            document.getElementById('view-ruang-cabang').classList.add('hidden'); document.getElementById('view-ruang-cabang').classList.remove('flex'); 
-            renderDashboardEvents(); 
         }
 
         function updateStatusVisualEvent(ev) {
@@ -578,29 +610,43 @@
                 
                 let bgClass = terdaftar.length > 0 ? "bg-white border-brand-200 shadow-sm hover:border-brand-400" : "bg-white border-slate-200 shadow-sm hover:border-slate-300 opacity-90";
                 let iconWarna = terdaftar.length > 0 ? "bg-brand-50 text-brand-600" : "bg-slate-50 text-slate-400";
-                let statusTeks = terdaftar.length > 0 ? `<span class="text-xs font-black text-brand-600">${terdaftar.length}</span> <span class="text-[10px] text-slate-400 font-bold">Peserta</span>` : `<span class="text-[10px] text-slate-400 font-bold">Belum ada</span>`;
+                
+                // Formating status peserta agar terlihat manis saat mode List di HP
+                let statusTeks = terdaftar.length > 0 
+                    ? `<div class="flex items-baseline md:flex-col gap-1 md:gap-0"><span class="text-sm md:text-xs font-black text-brand-600">${terdaftar.length}</span> <span class="text-[10px] text-slate-400 font-bold">Peserta</span></div>` 
+                    : `<span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-2 py-1 rounded md:bg-transparent md:p-0">Belum ada</span>`;
 
                 container.innerHTML += `
-                    <div onclick="bukaRuangCabang('${c.nama_cabang}', '${c.tipe}')" class="flex flex-col p-5 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer ${bgClass} group">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors mb-4 group-hover:bg-brand-500 group-hover:text-white ${iconWarna}">
-                            <i data-lucide="${c.ikon || 'award'}" class="w-5 h-5"></i>
+                    <div onclick="window.location.hash = '#cabang-' + encodeURIComponent('${c.nama_cabang}') + '|' + encodeURIComponent('${c.tipe}')" class="flex flex-row md:flex-col items-center md:items-start p-4 md:p-5 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer ${bgClass} group">
+                        
+                        <div class="w-12 h-12 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors mr-4 md:mr-0 md:mb-4 group-hover:bg-brand-500 group-hover:text-white ${iconWarna}">
+                            <i data-lucide="${c.ikon || 'award'}" class="w-6 h-6 md:w-5 md:h-5"></i>
                         </div>
-                        <h4 class="font-extrabold text-sm text-slate-800 leading-tight mb-1 group-hover:text-brand-600">${c.nama_cabang}</h4>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">${c.tipe === 'PA/PI' ? 'Putra / Putri' : 'Umum / Tim'}</p>
-                        <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <div>${statusTeks}</div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-brand-500"></i>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-extrabold text-sm text-slate-800 leading-tight mb-0.5 md:mb-1 group-hover:text-brand-600 truncate">${c.nama_cabang}</h4>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.tipe === 'PA/PI' ? 'Putra / Putri' : 'Umum / Tim'}</p>
+                        </div>
+                        
+                        <div class="mt-0 md:mt-auto pt-0 md:pt-3 border-none md:border-t md:border-slate-100 flex items-center justify-end md:justify-between w-auto md:w-full ml-3 md:ml-0 shrink-0">
+                            <div class="mr-3 md:mr-0 text-right md:text-left">${statusTeks}</div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 md:w-4 md:h-4 text-slate-300 group-hover:text-brand-500"></i>
                         </div>
                     </div>`;
             });
             lucide.createIcons();
         }
 
-        function bukaRuangCabang(namaCabang, tipe) {
+        // ==========================================
+        // UI RENDERING LOGIC (RUANG KERJA CABANG)
+        // ==========================================
+        function showRuangCabangUI(namaCabang, tipe) {
             STATE.currentCabang = namaCabang === 'SEMUA' ? null : namaCabang; 
             STATE.currentTipe = tipe;
             
+            document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex');
             document.getElementById('view-dashboard-cabang').classList.add('hidden'); document.getElementById('view-dashboard-cabang').classList.remove('flex');
+            
             const ruang = document.getElementById('view-ruang-cabang');
             ruang.classList.remove('hidden'); ruang.classList.add('flex');
             
@@ -610,13 +656,6 @@
             renderTabelDraft();
         }
 
-        function tutupRuangCabang() {
-            STATE.currentCabang = null; STATE.currentTipe = null;
-            document.getElementById('view-ruang-cabang').classList.add('hidden'); document.getElementById('view-ruang-cabang').classList.remove('flex');
-            renderGridCabangCard(); 
-            document.getElementById('view-dashboard-cabang').classList.remove('hidden'); document.getElementById('view-dashboard-cabang').classList.add('flex');
-        }
-
         function renderTabelDraft() {
             const tBody = document.getElementById('tableDraftBody'); tBody.innerHTML = '';
             let pendaftar = STATE.dashboardData.filter(d => d.id_event === STATE.currentEventId);
@@ -624,11 +663,9 @@
             const btnTambah = document.getElementById('btnTambahPeserta');
 
             if (STATE.isClosed || !STATE.currentCabang) {
-                btnTambah.classList.add('hidden');
-                btnTambah.classList.remove('flex');
+                btnTambah.classList.add('hidden'); btnTambah.classList.remove('flex');
             } else {
-                btnTambah.classList.remove('hidden');
-                btnTambah.classList.add('flex');
+                btnTambah.classList.remove('hidden'); btnTambah.classList.add('flex');
             }
             
             const kataKunci = document.getElementById('inCariPeserta') ? document.getElementById('inCariPeserta').value.toLowerCase() : '';
@@ -697,6 +734,9 @@
             lucide.createIcons();
         }
 
+        // ==========================================
+        // FUNGSI UMUM (Cetak, Form, Hapus, Kunci)
+        // ==========================================
         function cetakBuktiExcel() {
             let pendaftar = STATE.dashboardData.filter(d => d.id_event === STATE.currentEventId && d.status !== 'DRAFT' && d.status !== 'REVISI');
             if(pendaftar.length === 0) { Swal.fire('Data Kosong', 'Belum ada data pendaftar yang disubmit/dikunci.', 'info'); return; }
