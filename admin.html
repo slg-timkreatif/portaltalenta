@@ -14,7 +14,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } } } }
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, 
+                    colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } 
+                } 
+            } 
+        }
     </script>
 
     <style>
@@ -22,6 +29,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
+        
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -36,13 +44,29 @@
         /* PEROMBAKAN UX MOBILE: TABEL MENJADI KARTU PRESISI */
         @media (max-width: 767px) {
             .mobile-card-table thead { display: none; }
-            .mobile-card-table tr { display: flex; flex-direction: column; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; margin-bottom: 1rem; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
+            .mobile-card-table tr { 
+                display: flex; flex-direction: column; background-color: #ffffff; 
+                border: 1px solid #e2e8f0; border-radius: 1rem; margin-bottom: 1rem; 
+                padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; 
+            }
             .mobile-card-table tr:hover td { background-color: transparent; }
-            .mobile-card-table td { display: flex; justify-content: space-between; align-items: flex-start; padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; text-align: right; }
+            .mobile-card-table td { 
+                display: flex; justify-content: space-between; align-items: flex-start; 
+                padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; text-align: right; 
+            }
             
             /* Area Footer Kartu (LOCKED / TOMBOL AKSI) */
-            .mobile-card-table td:last-child { border-bottom: none; justify-content: flex-end; padding-top: 0.75rem; margin-top: 0.5rem; border-top: 1px dashed #e2e8f0; background-color: #f8fafc; border-radius: 0 0 1rem 1rem; margin-left: -1rem; margin-right: -1rem; padding-right: 1rem; padding-left: 1rem; }
-            .mobile-card-table td::before { content: attr(data-label); font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; text-align: left; margin-right: 1rem; flex-shrink: 0; margin-top: 0.2rem; }
+            .mobile-card-table td:last-child { 
+                border-bottom: none; justify-content: flex-end; padding-top: 0.75rem; 
+                margin-top: 0.5rem; border-top: 1px dashed #e2e8f0; background-color: #f8fafc; 
+                border-radius: 0 0 1rem 1rem; margin-left: -1rem; margin-right: -1rem; 
+                padding-right: 1rem; padding-left: 1rem; 
+            }
+            .mobile-card-table td::before { 
+                content: attr(data-label); font-size: 0.65rem; font-weight: 800; 
+                text-transform: uppercase; color: #94a3b8; text-align: left; 
+                margin-right: 1rem; flex-shrink: 0; margin-top: 0.2rem; 
+            }
             .mobile-card-table .td-no-label::before { display: none; }
             
             /* Penyesuaian Kolom Checkbox untuk Verifikasi Masal di HP */
@@ -268,7 +292,7 @@
                             </div>
                         </div>
 
-                        <!-- Tabel/Card List Mobile -->
+                        <!-- TABEL VERIFIKASI -->
                         <div class="flex-1 overflow-x-auto w-full bg-slate-50/30 p-2 md:p-0">
                             <table class="w-full text-left min-w-full md:min-w-[850px] mobile-card-table">
                                 <thead>
@@ -322,6 +346,7 @@
                         </div>
                     </div>
 
+                    <!-- TABEL REKAP -->
                     <div class="bg-white md:rounded-[2rem] md:shadow-sm md:border border-slate-200 overflow-hidden bg-transparent md:bg-white">
                         <div class="overflow-x-auto p-2 md:p-0">
                             <table class="w-full text-left min-w-full md:min-w-[800px] mobile-card-table">
@@ -371,10 +396,29 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyxDqzn2-Yj4BXmN_V3rF7djznKplMzfuMkeujiHBnOQEcUTaBDqvZWK1iCIjfDAkpFQg/exec";
         
         let STATE = { 
-            user: null, rawData: [], allData: [], filteredData: [], events: [], settings: {}, currentEventId: null
+            user: null, 
+            rawData: [], 
+            allData: [], 
+            filteredData: [], 
+            events: [], 
+            settings: {}, 
+            currentEventId: null 
         };
 
         let chartStatusInstance = null; let chartCabangInstance = null; let chartSekolahInstance = null;
+
+        // KAMUS WARNA DINAMIS TAILWIND
+        const TW_COLORS = {
+            'teal': { bg: 'bg-teal-50', text: 'text-teal-600', border: 'border-teal-200', hoverBorder: 'hover:border-teal-400', groupHoverBg: 'group-hover:bg-teal-500' },
+            'blue': { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hoverBorder: 'hover:border-blue-400', groupHoverBg: 'group-hover:bg-blue-500' },
+            'indigo': { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-200', hoverBorder: 'hover:border-indigo-400', groupHoverBg: 'group-hover:bg-indigo-500' },
+            'purple': { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hoverBorder: 'hover:border-purple-400', groupHoverBg: 'group-hover:bg-purple-500' },
+            'rose': { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', hoverBorder: 'hover:border-rose-400', groupHoverBg: 'group-hover:bg-rose-500' },
+            'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-400', groupHoverBg: 'group-hover:bg-emerald-500' },
+            'orange': { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', hoverBorder: 'hover:border-orange-400', groupHoverBg: 'group-hover:bg-orange-500' },
+            'red': { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200', hoverBorder: 'hover:border-red-400', groupHoverBg: 'group-hover:bg-red-500' },
+            'gray': { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-200', hoverBorder: 'hover:border-slate-400', groupHoverBg: 'group-hover:bg-slate-500' }
+        };
 
         // ==========================================
         // SISTEM ROUTING (HASH / TOMBOL BACK HP)
@@ -388,7 +432,7 @@
             } else if (hash.startsWith('#event-')) {
                 const parts = hash.replace('#event-', '').split('/');
                 const idEvent = parts[0];
-                const view = parts.length > 1 ? parts[1] : 'dashboard'; // Default ke dashboard
+                const view = parts.length > 1 ? parts[1] : 'dashboard';
                 showEventDetailUI(idEvent, view);
             }
         }
@@ -398,6 +442,9 @@
             else { window.location.hash = fallbackHash; }
         }
 
+        // ==========================================
+        // LOGIN & INISIALISASI
+        // ==========================================
         window.onload = () => {
             callAPI('getSettings').then(res => {
                 if(res.status === 'success' && res.data) {
@@ -429,7 +476,9 @@
         async function doLogin() {
             const pin = document.getElementById('inputPin').value; if(!pin) return;
             Swal.fire({ title: 'Otentikasi...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            
             const res = await callAPI('login', { pin: pin });
+            
             if (res.status === 'success') { 
                 if (res.user.role === 'ADMIN' || res.user.role === 'PANITIA') {
                     const userEncoded = btoa(encodeURIComponent(JSON.stringify(res.user)));
@@ -438,12 +487,15 @@
                 } else { 
                     Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Silakan gunakan Portal Pendaftar.', confirmButtonColor: '#ef4444' }); 
                 }
-            } else { Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: res.message, confirmButtonColor: '#4f46e5' }); }
+            } else { 
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: res.message, confirmButtonColor: '#4f46e5' }); 
+            }
         }
 
         function mulaiAplikasiAdmin() {
             document.getElementById('view-landing').classList.add('hidden');
             document.getElementById('app-layout').classList.remove('hidden');
+            
             document.getElementById('sideName').innerText = STATE.user.nama;
             document.getElementById('sideRole').innerText = STATE.user.role;
             if (STATE.user.role === 'ADMIN') document.getElementById('menuAdminOnly').classList.remove('hidden');
@@ -456,8 +508,12 @@
         }
 
         async function callAPI(action, payload = {}) {
-            try { const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, payload: payload }) }); return await response.json(); } 
-            catch (error) { return { status: "error", message: "Gagal terhubung ke server API." }; }
+            try { 
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, payload: payload }) }); 
+                return await response.json(); 
+            } catch (error) { 
+                return { status: "error", message: "Gagal terhubung ke server API." }; 
+            }
         }
 
         function showLoader(show) {
@@ -478,9 +534,16 @@
             
             document.getElementById('mobile-nav-admin').classList.add('hidden'); document.getElementById('mobile-nav-admin').classList.remove('flex');
 
-            ['dashboard', 'verifikasi', 'rekap'].forEach(v => { document.getElementById(`view-${v}`).classList.add('hidden'); document.getElementById(`view-${v}`).classList.remove('flex'); document.getElementById(`nav-${v}`).classList.remove('active'); });
-            document.getElementById('view-events').classList.remove('hidden'); document.getElementById('view-events').classList.add('flex'); document.getElementById('nav-events').classList.add('active');
+            ['dashboard', 'verifikasi', 'rekap'].forEach(v => { 
+                document.getElementById(`view-${v}`).classList.add('hidden'); 
+                document.getElementById(`view-${v}`).classList.remove('flex'); 
+                document.getElementById(`nav-${v}`).classList.remove('active'); 
+            });
+            
+            document.getElementById('view-events').classList.remove('hidden'); document.getElementById('view-events').classList.add('flex'); 
+            document.getElementById('nav-events').classList.add('active');
             document.getElementById('pageTitle').innerText = 'Pilih Event Lomba';
+            
             renderDashboardEvents();
         }
 
@@ -488,6 +551,7 @@
             STATE.currentEventId = idEvent;
             const ev = STATE.events.find(e => e.id_event === idEvent);
             if(!ev) { window.location.replace('#beranda'); return; }
+            
             STATE.allData = STATE.rawData.filter(d => d.id_event === idEvent);
 
             document.getElementById('sideContextEventName').innerText = ev.nama_event;
@@ -509,6 +573,7 @@
             document.getElementById(`view-${viewName}`).classList.remove('hidden'); 
             document.getElementById(`view-${viewName}`).classList.add('flex'); 
             document.getElementById(`nav-${viewName}`).classList.add('active');
+            
             document.getElementById(`mob-nav-${viewName}`).classList.remove('text-slate-400');
             document.getElementById(`mob-nav-${viewName}`).classList.add('text-brand-600');
 
@@ -536,7 +601,9 @@
                 STATE.rawData = dashRes.data;
                 if (STATE.user.role === 'PANITIA') STATE.events = initRes.events.filter(e => e.id_event === STATE.user.akses_event);
                 else STATE.events = initRes.events;
-            } else { Swal.fire('Error', dashRes.message || "Gagal sinkronisasi data", 'error'); }
+            } else { 
+                Swal.fire('Error', dashRes.message || "Gagal sinkronisasi data", 'error'); 
+            }
             showLoader(false);
 
             if(forceRefresh) { handleHashRouting(); }
@@ -552,18 +619,21 @@
         function renderDashboardEvents() {
             const container = document.getElementById('containerEvents'); container.innerHTML = '';
             if(STATE.events.length === 0) { document.getElementById('emptyEvents').classList.remove('hidden'); document.getElementById('emptyEvents').classList.add('flex'); return; }
-            const cMapHex = { 'teal': '#14b8a6', 'blue': '#3b82f6', 'indigo': '#6366f1', 'purple': '#a855f7', 'rose': '#f43f5e', 'emerald': '#10b981', 'orange': '#f97316', 'red': '#ef4444' };
-
+            
             STATE.events.forEach(ev => {
-                const hexWarna = cMapHex[ev.warna.toLowerCase()] || '#3b82f6';
+                const wKey = String(ev.warna).toLowerCase().trim();
+                const theme = TW_COLORS[wKey] || TW_COLORS['blue'];
+                
                 const pendaftarEventIni = STATE.rawData.filter(d => d.id_event === ev.id_event);
                 const countPending = pendaftarEventIni.filter(d => d.status === 'PENDING').length;
+                
                 let textInfo = countPending > 0 
                     ? `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-[10px] font-extrabold border border-amber-200 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div> ${countPending} Antrean Masuk</span>` 
                     : `<span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Antrean Kosong</span>`;
 
-                let visualVisual = `<div style="background-color:${hexWarna}" class="w-full h-36 flex items-center justify-center text-white"><i data-lucide="${ev.ikon}" class="w-14 h-14 opacity-90"></i></div>`;
-                if(ev.thumbnail) visualVisual = `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">`;
+                let visualVisual = ev.thumbnail 
+                    ? `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">` 
+                    : `<div class="w-full h-36 flex items-center justify-center text-white ${theme.bg.replace('50', '500')}"><i data-lucide="${ev.ikon}" class="w-14 h-14 opacity-90"></i></div>`;
 
                 container.insertAdjacentHTML('beforeend', `
                 <div onclick="window.location.hash = '#event-${ev.id_event}/dashboard'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full">
@@ -571,7 +641,10 @@
                     <div class="p-6 flex-1 flex flex-col">
                         <div class="flex items-center gap-2 mb-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</div>
                         <h4 class="text-xl font-black text-slate-800 leading-tight mb-4 group-hover:text-brand-600 transition-colors">${ev.nama_event}</h4>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between"><div>${textInfo}</div><div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="settings-2" class="w-4 h-4"></i></div></div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div>${textInfo}</div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="settings-2" class="w-4 h-4"></i></div>
+                        </div>
                     </div>
                 </div>`);
             });
@@ -582,9 +655,12 @@
             const filterSekolah = document.getElementById('filterSekolah');
             const filterCabang = document.getElementById('filterCabang');
             const sekolahSet = new Set(); const cabangSet = new Set();
+            
             STATE.allData.forEach(d => { sekolahSet.add(d.asal_sekolah); cabangSet.add(d.cabang); });
+            
             filterSekolah.innerHTML = '<option value="ALL">Semua Instansi</option>';
             Array.from(sekolahSet).sort().forEach(s => filterSekolah.innerHTML += `<option value="${s}">${s}</option>`);
+            
             filterCabang.innerHTML = '<option value="ALL">Semua Cabang Lomba</option>';
             Array.from(cabangSet).sort().forEach(c => filterCabang.innerHTML += `<option value="${c}">${c}</option>`);
         }
@@ -622,7 +698,9 @@
             if(unsubmittedTotal > 0) {
                 document.getElementById('statDraft').innerText = unsubmittedTotal;
                 alertDraft.classList.remove('hidden'); alertDraft.classList.add('flex');
-            } else { alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); }
+            } else { 
+                alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); 
+            }
 
             let progressPct = total > 0 ? Math.round((lockedTotal / total) * 100) : 0;
             document.getElementById('progressPercentage').innerText = progressPct + '%';
@@ -656,7 +734,6 @@
             });
 
             const dataValid = STATE.allData.filter(d => d.status !== 'DRAFT');
-            
             const cabMap = {}; const sekMap = {};
             dataValid.forEach(d => {
                 cabMap[d.cabang] = (cabMap[d.cabang] || 0) + 1;
@@ -680,8 +757,8 @@
 
             const arrSekolah = Object.keys(sekMap).map(k => ({nama: k, jumlah: sekMap[k]}));
             arrSekolah.sort((a,b) => b.jumlah - a.jumlah);
-            
             const topSekolah = arrSekolah.slice(0, 10); 
+            
             const ctxSekolah = document.getElementById('chartSekolah').getContext('2d');
             chartSekolahInstance = new Chart(ctxSekolah, {
                 type: 'bar',
@@ -716,6 +793,10 @@
 
             antreanData.forEach((d, idx) => {
                 const dateWaktu = new Date(d.waktu).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                
+                // MUNCULKAN TOMBOL LINK BERKAS UNTUK PANITIA JIKA ADA
+                let linkHtml = d.link_syarat ? `<a href="${d.link_syarat}" target="_blank" class="mt-2 flex items-center justify-end md:justify-start gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800"><i data-lucide="link" class="w-3 h-3"></i> Cek Berkas Lampiran</a>` : '';
+
                 tBody.innerHTML += `
                     <tr class="group hover:bg-brand-50/30 transition-colors relative">
                         <td class="chk-column text-center"><input type="checkbox" onchange="updateTombolBulk()" class="chk-verif w-5 h-5 md:w-4 md:h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer" value="${d.id_daftar}"></td>
@@ -730,6 +811,7 @@
                             <div class="text-right md:text-left">
                                 <div class="font-bold text-sm text-slate-700">${d.cabang}</div>
                                 <div class="text-[10px] font-extrabold text-slate-500 mt-1 uppercase tracking-widest px-2 py-0.5 bg-slate-100 border border-slate-200 rounded w-fit ml-auto md:ml-0">${d.gender || 'Umum'}</div>
+                                ${linkHtml}
                             </div>
                         </td>
                         <td data-label="Disubmit Pada">
@@ -827,6 +909,8 @@
 
             data.forEach((d, idx) => {
                 let badgeClass = d.status === 'DISETUJUI' ? "bg-emerald-100 text-emerald-700 border-emerald-200" : d.status === 'PENDING' ? "bg-amber-100 text-amber-700 border-amber-200" : d.status === 'REVISI' ? "bg-red-100 text-red-700 border-red-200" : "bg-slate-200 text-slate-500 border-slate-300";
+                
+                let linkHtml = d.link_syarat ? `<br><a href="${d.link_syarat}" target="_blank" class="mt-1 inline-flex items-center gap-1 text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 hover:bg-blue-100 transition-colors"><i data-lucide="external-link" class="w-3 h-3"></i> Berkas Lampiran</a>` : '';
 
                 tBody.innerHTML += `
                     <tr>
@@ -839,24 +923,29 @@
                             </div>
                         </td>
                         <td data-label="J.K." class="text-right md:text-center font-bold">${d.jk === 'Laki-laki' ? 'L' : (d.jk === 'Perempuan' ? 'P' : '-')}</td>
-                        <td data-label="Cabang Lomba" class="font-bold text-sm text-slate-700 text-right md:text-left">${d.cabang}</td>
+                        <td data-label="Cabang Lomba" class="text-right md:text-left">
+                            <span class="font-bold text-sm text-slate-700">${d.cabang}</span>
+                            ${linkHtml}
+                        </td>
                         <td data-label="Kategori" class="text-right md:text-left"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-extrabold uppercase tracking-widest text-slate-500">${d.gender || 'Umum'}</span></td>
                         <td data-label="Status Dokumen" class="td-no-label text-right w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t border-slate-100 md:border-none">
                             <span class="px-2.5 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${badgeClass}">${d.status}</span>
                         </td>
                     </tr>`;
             });
+            lucide.createIcons();
         }
 
         function exportToCSV() {
             if (STATE.filteredData.length === 0) { Swal.fire('Kosong', 'Tidak ada data untuk diekspor.', 'info'); return; }
             const eventInfo = STATE.events.find(e => e.id_event === STATE.currentEventId);
             
-            const headers = ['No', 'ID Daftar', 'Event', 'Asal Sekolah', 'Nama Peserta', 'Jenis Kelamin', 'NISN', 'Tempat Tgl Lahir', 'Kelas', 'Cabang Lomba', 'Kategori', 'Status', 'Catatan'];
+            // MUNCULKAN LINK BERKAS PADA HASIL EXPORT CSV
+            const headers = ['No', 'ID Daftar', 'Event', 'Asal Sekolah', 'Nama Peserta', 'Jenis Kelamin', 'NISN', 'Tempat Tgl Lahir', 'Kelas', 'Cabang Lomba', 'Kategori', 'Status', 'Link Berkas', 'Catatan'];
             let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
 
             STATE.filteredData.forEach((d, idx) => {
-                let row = [ idx + 1, d.id_daftar, `"${eventInfo.nama_event}"`, `"${d.asal_sekolah}"`, `"${d.nama}"`, d.jk, `="${d.nisn}"`, `"${d.ttl}"`, `"${d.kelas}"`, `"${d.cabang}"`, d.gender, d.status, `"${d.catatan || ''}"` ];
+                let row = [ idx + 1, d.id_daftar, `"${eventInfo.nama_event}"`, `"${d.asal_sekolah}"`, `"${d.nama}"`, d.jk, `="${d.nisn}"`, `"${d.ttl}"`, `"${d.kelas}"`, `"${d.cabang}"`, d.gender, d.status, `"${d.link_syarat || ''}"`, `"${d.catatan || ''}"` ];
                 csvContent += row.join(",") + "\n";
             });
 
