@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         tailwind.config = { 
@@ -25,23 +24,41 @@
     </script>
 
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
         
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
         
         table { border-collapse: separate; border-spacing: 0; }
-        th { background-color: #f1f5f9; text-transform: uppercase; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; color: #475569; padding: 1rem; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 500; }
+        th { 
+            background-color: #f1f5f9; text-transform: uppercase; font-size: 0.7rem; 
+            font-weight: 800; letter-spacing: 0.05em; color: #475569; padding: 1rem; 
+            border-bottom: 2px solid #e2e8f0; 
+        }
+        td { 
+            padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; 
+            font-size: 0.85rem; font-weight: 500; 
+        }
         tr:hover td { background-color: #f8fafc; }
         
         .nav-item { transition: all 0.2s ease; }
-        .nav-item.active { background-color: rgba(255,255,255,0.1); color: #ffffff; font-weight: 700; border-right: 3px solid #60a5fa; }
+        .nav-item.active { 
+            background-color: rgba(255,255,255,0.1); color: #ffffff; 
+            font-weight: 700; border-right: 3px solid #60a5fa; 
+        }
 
-        /* PEROMBAKAN UX MOBILE: TABEL MENJADI KARTU PRESISI */
+        /* TABEL KARTU KHUSUS MOBILE */
         @media (max-width: 767px) {
             .mobile-card-table thead { display: none; }
             .mobile-card-table tr { 
@@ -54,8 +71,6 @@
                 display: flex; justify-content: space-between; align-items: flex-start; 
                 padding: 0.5rem 0; border-bottom: 1px dashed #e2e8f0; text-align: right; 
             }
-            
-            /* Area Footer Kartu (LOCKED / TOMBOL AKSI) */
             .mobile-card-table td:last-child { 
                 border-bottom: none; justify-content: flex-end; padding-top: 0.75rem; 
                 margin-top: 0.5rem; border-top: 1px dashed #e2e8f0; background-color: #f8fafc; 
@@ -69,8 +84,10 @@
             }
             .mobile-card-table .td-no-label::before { display: none; }
             
-            /* Penyesuaian Kolom Checkbox untuk Verifikasi Masal di HP */
-            .chk-column { position: absolute; top: 1rem; right: 1rem; border-bottom: none !important; padding: 0 !important; width: auto !important; }
+            .chk-column { 
+                position: absolute; top: 1rem; right: 1rem; border-bottom: none !important; 
+                padding: 0 !important; width: auto !important; 
+            }
             .chk-column::before { display: none; }
         }
     </style>
@@ -81,6 +98,7 @@
     <div id="view-landing" class="fixed inset-0 z-50 flex items-center justify-center p-5 transition-all duration-700 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000&auto=format&fit=crop');">
         <div class="absolute inset-0 bg-slate-900/80 mix-blend-multiply"></div>
         <div class="glass-box rounded-[2rem] p-8 w-full max-w-md relative z-10 fade-in text-center shadow-2xl text-white" style="background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);">
+            
             <div class="mb-8 flex flex-col items-center">
                 <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mb-5 shadow-lg border border-slate-600">
                     <i data-lucide="shield-check" class="w-10 h-10 text-brand-400"></i>
@@ -91,18 +109,23 @@
             
             <form onsubmit="event.preventDefault(); doLogin();" class="space-y-5">
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i data-lucide="key" class="w-5 h-5 text-slate-500"></i></div>
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i data-lucide="key" class="w-5 h-5 text-slate-500"></i>
+                    </div>
                     <input type="password" id="inputPin" required autocomplete="off" placeholder="PIN Akses Panitia" class="w-full bg-slate-800/50 border border-slate-600 rounded-2xl pl-12 pr-5 py-4 text-center text-lg font-bold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
                 </div>
                 <button type="submit" class="w-full bg-brand-600 text-white font-extrabold py-4 rounded-2xl shadow-lg hover:bg-brand-500 hover:-translate-y-1 active:scale-95 transition-all duration-300">
                     OTENTIKASI MASUK
                 </button>
             </form>
-            <button onclick="window.location.href='?v=index'" class="text-[10px] text-slate-400 mt-8 font-bold uppercase tracking-widest hover:text-white transition-colors">Kembali ke Portal Pendaftar</button>
+            
+            <button onclick="window.location.href='?v=index'" class="text-[10px] text-slate-400 mt-8 font-bold uppercase tracking-widest hover:text-white transition-colors">
+                Kembali ke Portal Pendaftar
+            </button>
         </div>
     </div>
 
-    <!-- OVERLAY LOADING -->
+    <!-- OVERLAY LOADING GLOBAL -->
     <div id="loaderGlobal" class="fixed inset-0 z-[999] bg-slate-900/50 backdrop-blur-sm flex flex-col items-center justify-center hidden">
         <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
             <i data-lucide="loader-2" class="w-10 h-10 text-brand-600 animate-spin mb-3"></i>
@@ -113,10 +136,12 @@
     <!-- MAIN APP LAYOUT -->
     <div id="app-layout" class="hidden w-full h-full flex overflow-hidden relative">
         
-        <!-- SIDEBAR ADMIN (GELAP) -->
+        <!-- SIDEBAR ADMIN DESKTOP (GELAP) -->
         <aside id="sidebar" class="hidden md:flex flex-col w-[280px] bg-slate-900 text-slate-300 h-full shrink-0 shadow-2xl z-20">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3 cursor-pointer" onclick="navigasiMundur('#beranda')">
-                <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30 shrink-0"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3 cursor-pointer hover:bg-slate-800 transition-colors" onclick="navigasiMundur('#beranda')">
+                <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30 shrink-0">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
                 <div>
                     <h1 class="font-extrabold text-[15px] text-white leading-tight">PANEL KENDALI</h1>
                     <p class="text-[9px] font-bold text-brand-400 uppercase tracking-widest">Portal Talenta</p>
@@ -130,27 +155,40 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto py-6 flex flex-col gap-2 px-3">
-                <button onclick="window.location.hash = '#beranda'" id="nav-events" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="layers" class="w-5 h-5"></i> Beranda Event</button>
+                <button onclick="window.location.hash = '#beranda'" id="nav-events" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                    <i data-lucide="layers" class="w-5 h-5"></i> Beranda Event
+                </button>
                 
                 <div id="menuEventContext" class="hidden flex-col gap-2 mt-2 pt-2 border-t border-slate-800">
                     <p class="text-[9px] font-extrabold text-brand-400 uppercase tracking-widest px-4 mb-1" id="sideContextEventName">EVENT TERPILIH</p>
-                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="pie-chart" class="w-5 h-5"></i> Analitik & Progres</button>
+                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                        <i data-lucide="activity" class="w-5 h-5"></i> Pantauan Sekolah
+                    </button>
                     <button onclick="switchView('verifikasi')" id="nav-verifikasi" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white flex justify-between">
                         <div class="flex items-center gap-3"><i data-lucide="check-square" class="w-5 h-5"></i> Verifikasi Berkas</div>
                         <span id="badgeSideVerif" class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded hidden">0</span>
                     </button>
-                    <button onclick="switchView('rekap')" id="nav-rekap" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Ekspor Data CSV</button>
+                    <button onclick="switchView('rekap')" id="nav-rekap" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                        <i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Ekspor Data CSV
+                    </button>
                 </div>
                 
+                <!-- MENU MASTER DATA (SEKARANG DINAMIS) -->
                 <div id="menuAdminOnly" class="hidden mt-4 pt-4 border-t border-slate-800">
                     <p class="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest px-4 mb-2">Master Data</p>
-                    <button onclick="Swal.fire('Informasi', 'Manajemen Event saat ini dilakukan langsung melalui Google Sheets Master.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="database" class="w-5 h-5"></i> Master Event & Cabang</button>
-                    <button onclick="Swal.fire('Informasi', 'Penambahan akun dan otorisasi dikelola via Google Sheets.', 'info')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="users-2" class="w-5 h-5"></i> Manajemen Akses</button>
+                    <button onclick="bukaLinkDinamisAdmin('LINK_MASTER_EVENT', 'Master Event')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                        <i data-lucide="database" class="w-5 h-5 text-brand-400"></i> Event & Cabang
+                    </button>
+                    <button onclick="bukaLinkDinamisAdmin('LINK_MASTER_USER', 'Master User')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                        <i data-lucide="users-2" class="w-5 h-5 text-brand-400"></i> Manajemen Akses
+                    </button>
                 </div>
             </nav>
 
             <div class="p-4 border-t border-slate-800">
-                <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-red-400 font-bold text-xs hover:bg-red-500/10 hover:text-red-300 transition-colors shadow-sm"><i data-lucide="log-out" class="w-4 h-4"></i> Keluar Sistem</button>
+                <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-red-400 font-bold text-xs hover:bg-red-500/10 hover:text-red-300 transition-colors shadow-sm">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar Sistem
+                </button>
             </div>
         </aside>
 
@@ -160,13 +198,17 @@
             <!-- MOBILE HEADER TOP -->
             <header id="mobile-header" class="md:hidden bg-slate-900 border-b border-slate-800 px-5 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
                 <div class="flex items-center gap-3 cursor-pointer" onclick="navigasiMundur('#beranda')">
-                    <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                    <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
                     <h2 class="font-extrabold text-white leading-tight text-sm">PANEL ADMIN</h2>
                 </div>
-                <button onclick="doLogout()" class="p-2 bg-slate-800 text-red-400 rounded-lg"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+                <button onclick="doLogout()" class="p-2 bg-slate-800 text-red-400 rounded-lg">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
             </header>
 
-            <!-- TOP BAR -->
+            <!-- TOP ACTION BAR -->
             <div id="top-bar" class="bg-white border-b border-slate-200 px-6 md:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 sticky top-0 z-10 shadow-sm">
                 <h2 id="pageTitle" class="text-xl font-black text-slate-800">Pilih Event Lomba</h2>
                 <div class="flex items-center gap-3">
@@ -182,63 +224,45 @@
                 <div id="view-events" class="fade-in max-w-6xl mx-auto flex flex-col pb-10">
                     <div class="mb-8">
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Beranda Event Terpusat</h2>
-                        <p class="text-slate-500 font-medium mt-1 text-sm md:text-base">Pilih panel event lomba di bawah ini untuk memulai proses verifikasi dan analitik data.</p>
+                        <p class="text-slate-500 font-medium mt-1 text-sm md:text-base">Pilih panel event lomba di bawah ini untuk memulai proses verifikasi dan pemantauan.</p>
                     </div>
 
                     <div id="containerEvents" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    
                     <div id="emptyEvents" class="flex-col items-center justify-center py-20 hidden opacity-60">
                         <i data-lucide="calendar-x" class="w-20 h-20 text-slate-300 mb-4"></i>
                         <h5 class="text-lg font-extrabold text-slate-500">Belum ada event yang aktif untuk Anda.</h5>
                     </div>
                 </div>
 
-                <!-- VIEW 2: DASHBOARD ANALITIK -->
+                <!-- VIEW 2: DASHBOARD PANTAUAN SEKOLAH (MATRIKS) -->
                 <div id="view-dashboard" class="fade-in max-w-7xl mx-auto hidden flex-col gap-6 pb-10">
                     
-                    <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
-                        <div class="flex justify-between items-end mb-3">
-                            <div>
-                                <h3 class="text-base font-extrabold text-slate-800">Progres Finalisasi Pendaftar</h3>
-                                <p class="text-xs text-slate-500 font-medium mt-0.5">Rasio dokumen yang sudah dikunci oleh Instansi vs Total Draf dibuat.</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-2xl font-black text-brand-600" id="progressPercentage">0%</span>
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-4 mb-3 overflow-hidden shadow-inner">
-                            <div id="progressBar" class="bg-brand-500 h-4 rounded-full transition-all duration-1000 ease-out relative overflow-hidden" style="width: 0%">
-                                <div class="absolute inset-0 bg-white/20 w-full" style="animation: shimmer 2s infinite linear; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);"></div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                            <span id="progressFinalText" class="text-emerald-600">0 Sudah Dikunci</span>
-                            <span id="progressDraftText" class="text-amber-500">0 Masih Draf</span>
-                        </div>
-                    </div>
-
+                    <!-- KARTU STATISTIK RINGKAS -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
                             <div class="w-10 h-10 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5"></i></div>
-                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Entri Data</h4>
+                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Total Pendaftar</h4>
                             <span class="text-2xl md:text-3xl font-black text-slate-800" id="statTotal">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
                             <div class="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
-                            <h4 class="text-emerald-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Disetujui</h4>
+                            <h4 class="text-emerald-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Sudah Disetujui</h4>
                             <span class="text-2xl md:text-3xl font-black text-emerald-600" id="statSetuju">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-amber-200 bg-amber-50 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                        <div class="bg-white p-6 rounded-3xl border border-amber-200 bg-amber-50 shadow-sm flex flex-col">
                             <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="clock" class="w-5 h-5"></i></div>
                             <h4 class="text-amber-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Antrean Verif</h4>
                             <span class="text-2xl md:text-3xl font-black text-amber-700" id="statPending">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col transition-all hover:-translate-y-1 hover:shadow-md">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
                             <div class="w-10 h-10 bg-purple-50 border border-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="school" class="w-5 h-5"></i></div>
                             <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Instansi Terlibat</h4>
-                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statSekolah">0</span>
+                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statSekolahAktif">0</span>
                         </div>
                     </div>
 
+                    <!-- ALERT DRAFT MENUMPUK -->
                     <div id="alertDraft" class="hidden bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
                         <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
                         <div>
@@ -247,26 +271,24 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col items-center">
-                            <h3 class="text-sm font-extrabold text-slate-800 mb-6 w-full text-left uppercase tracking-widest">Peta Status Peserta</h3>
-                            <div class="relative w-full max-w-[250px] aspect-square flex justify-center items-center">
-                                <canvas id="chartStatus"></canvas>
+                    <!-- MATRIKS PARTISIPASI SEKOLAH (PENGGANTI CHART) -->
+                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-5 md:p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-widest">Matriks Partisipasi Sekolah</h3>
+                                <p class="text-xs text-slate-500 mt-1">Pantau status pendaftaran tiap cabang lomba dari seluruh instansi.</p>
+                            </div>
+                            <!-- Legenda Warna -->
+                            <div class="flex items-center gap-3 text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                <span class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div> Final</span>
+                                <span class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Draf</span>
+                                <span class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full border border-slate-300"></div> Kosong</span>
                             </div>
                         </div>
                         
-                        <div class="lg:col-span-2 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
-                            <h3 class="text-sm font-extrabold text-slate-800 mb-6 uppercase tracking-widest">Distribusi Pendaftar per Cabang</h3>
-                            <div class="relative w-full flex-1 min-h-[250px]">
-                                <canvas id="chartCabang"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col">
-                        <h3 class="text-sm font-extrabold text-slate-800 mb-6 uppercase tracking-widest">Peringkat Instansi Teraktif</h3>
-                        <div class="relative w-full h-[300px]">
-                            <canvas id="chartSekolah"></canvas>
+                        <!-- List Matriks -->
+                        <div id="containerMatriks" class="flex flex-col bg-white max-h-[600px] overflow-y-auto">
+                            <!-- Di-render oleh Javascript -->
                         </div>
                     </div>
                 </div>
@@ -376,7 +398,7 @@
                 <i data-lucide="layers" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold">Event</span>
             </button>
             <button id="mob-nav-dashboard" onclick="switchView('dashboard')" class="flex flex-col items-center justify-center p-2 w-1/4 text-slate-400 hover:text-brand-600 transition-colors">
-                <i data-lucide="pie-chart" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold">Analitik</span>
+                <i data-lucide="activity" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold">Pantauan</span>
             </button>
             <button id="mob-nav-verifikasi" onclick="switchView('verifikasi')" class="flex flex-col items-center justify-center p-2 w-1/4 text-slate-400 hover:text-brand-600 transition-colors relative">
                 <i data-lucide="check-square" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold">Verifikasi</span>
@@ -400,14 +422,12 @@
             rawData: [], 
             allData: [], 
             filteredData: [], 
-            events: [], 
+            events: [],
+            cabangs: [],
+            sekolahList: [], // Data seluruh sekolah di Korwil
             settings: {}, 
             currentEventId: null 
         };
-
-        let chartStatusInstance = null; 
-        let chartCabangInstance = null; 
-        let chartSekolahInstance = null;
 
         // KAMUS WARNA DINAMIS TAILWIND
         const TW_COLORS = {
@@ -500,8 +520,12 @@
             
             document.getElementById('sideName').innerText = STATE.user.nama;
             document.getElementById('sideRole').innerText = STATE.user.role;
-            if (STATE.user.role === 'ADMIN') document.getElementById('menuAdminOnly').classList.remove('hidden');
-            else document.getElementById('sideEvent').innerText = "Akses Event: " + (STATE.user.akses_event || 'Terbatas');
+            
+            if (STATE.user.role === 'ADMIN') {
+                document.getElementById('menuAdminOnly').classList.remove('hidden');
+            } else {
+                document.getElementById('sideEvent').innerText = "Akses Event: " + (STATE.user.akses_event || 'Terbatas');
+            }
             
             muatDataServer(false).then(() => {
                 if(window.location.hash === '') { window.location.replace('#beranda'); } 
@@ -530,6 +554,20 @@
             });
         }
 
+        // ==========================================
+        // FUNGSI PINTASAN DINAMIS ADMIN
+        // ==========================================
+        function bukaLinkDinamisAdmin(kunciSetelan, namaFitur) {
+            if(STATE.settings && STATE.settings[kunciSetelan] && STATE.settings[kunciSetelan].trim() !== "") {
+                window.open(STATE.settings[kunciSetelan], '_blank');
+            } else {
+                Swal.fire('Link Belum Dikonfigurasi', `Mohon tambahkan URL Spreadsheet pada baris <b>${kunciSetelan}</b> di Sheet "Pengaturan".`, 'info');
+            }
+        }
+
+        // ==========================================
+        // UI & ROUTING VIEWS
+        // ==========================================
         function showBerandaUI() {
             STATE.currentEventId = null;
             document.getElementById('menuEventContext').classList.remove('flex'); document.getElementById('menuEventContext').classList.add('hidden');
@@ -579,13 +617,15 @@
             document.getElementById(`mob-nav-${viewName}`).classList.remove('text-slate-400');
             document.getElementById(`mob-nav-${viewName}`).classList.add('text-brand-600');
 
-            const titles = { 'dashboard': 'Analitik: ' + ev.nama_event, 'verifikasi': 'Antrean Verif: ' + ev.nama_event, 'rekap': 'Ekspor Data: ' + ev.nama_event };
+            const titles = { 'dashboard': 'Pantauan: ' + ev.nama_event, 'verifikasi': 'Antrean Verif: ' + ev.nama_event, 'rekap': 'Ekspor Data: ' + ev.nama_event };
             document.getElementById('pageTitle').innerText = titles[viewName];
 
             populateFilters();
-            renderDashboard();
-            renderTabelVerifikasi();
-            if(viewName === 'rekap') renderTabelRekap();
+            
+            // Panggil render fungsi sesuai View
+            if(viewName === 'dashboard') renderDashboardMatriks();
+            else if(viewName === 'verifikasi') renderTabelVerifikasi();
+            else if(viewName === 'rekap') renderTabelRekap();
         }
 
         function switchView(viewName) {
@@ -601,6 +641,9 @@
             
             if(dashRes.status === 'success' && initRes.status === 'success') {
                 STATE.rawData = dashRes.data;
+                STATE.sekolahList = dashRes.sekolahList || []; // TARIK DATA SELURUH SEKOLAH DARI BACKEND
+                STATE.cabangs = initRes.cabangs;
+                
                 if (STATE.user.role === 'PANITIA') STATE.events = initRes.events.filter(e => e.id_event === STATE.user.akses_event);
                 else STATE.events = initRes.events;
             } else { 
@@ -608,7 +651,6 @@
             }
             showLoader(false);
 
-            // FIX BUG: Otomatis render ulang tabel & grafik
             handleHashRouting(); 
         }
 
@@ -646,7 +688,7 @@
                         <h4 class="text-xl font-black text-slate-800 leading-tight mb-4 group-hover:text-brand-600 transition-colors">${ev.nama_event}</h4>
                         <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                             <div>${textInfo}</div>
-                            <div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="settings-2" class="w-4 h-4"></i></div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="arrow-right" class="w-4 h-4"></i></div>
                         </div>
                     </div>
                 </div>`);
@@ -669,25 +711,25 @@
         }
 
         // ==========================================
-        // FITUR DASHBOARD & ANALITIK (CHART.JS)
+        // FITUR DASHBOARD MATRIKS SEKOLAH
         // ==========================================
-        function renderDashboard() {
+        function renderDashboardMatriks() {
             let total = STATE.allData.length;
             let setuju = STATE.allData.filter(d => d.status === 'DISETUJUI').length;
             let pending = STATE.allData.filter(d => d.status === 'PENDING').length;
-            let draft = STATE.allData.filter(d => d.status === 'DRAFT').length;
-            let revisi = STATE.allData.filter(d => d.status === 'REVISI').length;
-            
+            let draft = STATE.allData.filter(d => d.status === 'DRAFT' || d.status === 'REVISI').length;
             let lockedTotal = setuju + pending; 
-            let unsubmittedTotal = draft + revisi;
 
-            let sekolahSet = new Set(STATE.allData.map(d => d.asal_sekolah));
-
+            // Statistik Angka Atas
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statSetuju').innerText = setuju;
             document.getElementById('statPending').innerText = pending;
-            document.getElementById('statSekolah').innerText = sekolahSet.size;
+            
+            // Instansi Terlibat (Yang punya setidaknya 1 data non-draft)
+            let sekolahAktifSet = new Set(STATE.allData.filter(d => d.status !== 'DRAFT').map(d => d.asal_sekolah));
+            document.getElementById('statSekolahAktif').innerText = sekolahAktifSet.size + " dari " + STATE.sekolahList.length;
 
+            // Update Badge Sidebar
             const badgeSide = document.getElementById('badgeSideVerif');
             const badgeMob = document.getElementById('badgeMobVerif');
             if(pending > 0) {
@@ -697,88 +739,70 @@
                 badgeSide.classList.add('hidden'); badgeMob.classList.add('hidden');
             }
 
+            // Peringatan Draft
             const alertDraft = document.getElementById('alertDraft');
-            if(unsubmittedTotal > 0) {
-                document.getElementById('statDraft').innerText = unsubmittedTotal;
+            if(draft > 0) {
+                document.getElementById('statDraft').innerText = draft;
                 alertDraft.classList.remove('hidden'); alertDraft.classList.add('flex');
             } else { 
                 alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); 
             }
 
-            let progressPct = total > 0 ? Math.round((lockedTotal / total) * 100) : 0;
-            document.getElementById('progressPercentage').innerText = progressPct + '%';
-            document.getElementById('progressBar').style.width = progressPct + '%';
-            document.getElementById('progressFinalText').innerText = lockedTotal + " Sudah Terkunci / Final";
-            document.getElementById('progressDraftText').innerText = unsubmittedTotal + " Masih Draf / Revisi";
-
-            renderCharts(setuju, pending, revisi, draft);
-        }
-
-        function renderCharts(cSetuju, cPending, cRevisi, cDraft) {
-            if(chartStatusInstance) chartStatusInstance.destroy();
-            if(chartCabangInstance) chartCabangInstance.destroy();
-            if(chartSekolahInstance) chartSekolahInstance.destroy();
-
-            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-            Chart.defaults.color = '#64748b';
-
-            const ctxStatus = document.getElementById('chartStatus').getContext('2d');
-            chartStatusInstance = new Chart(ctxStatus, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Disetujui', 'Pending Verif', 'Revisi', 'Masih Draf'],
-                    datasets: [{
-                        data: [cSetuju, cPending, cRevisi, cDraft],
-                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#cbd5e1'],
-                        borderWidth: 0, hoverOffset: 4
-                    }]
-                },
-                options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font:{size: 10} } } } }
-            });
-
-            const dataValid = STATE.allData.filter(d => d.status !== 'DRAFT');
-            const cabMap = {}; const sekMap = {};
-            dataValid.forEach(d => {
-                cabMap[d.cabang] = (cabMap[d.cabang] || 0) + 1;
-                sekMap[d.asal_sekolah] = (sekMap[d.asal_sekolah] || 0) + 1;
-            });
-
-            const lblCabang = Object.keys(cabMap); const valCabang = Object.values(cabMap);
-            const ctxCabang = document.getElementById('chartCabang').getContext('2d');
-            chartCabangInstance = new Chart(ctxCabang, {
-                type: 'bar',
-                data: {
-                    labels: lblCabang,
-                    datasets: [{ label: 'Jumlah Pendaftar', data: valCabang, backgroundColor: '#3b82f6', borderRadius: 6 }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: {display: false} } }
-                }
-            });
-
-            const arrSekolah = Object.keys(sekMap).map(k => ({nama: k, jumlah: sekMap[k]}));
-            arrSekolah.sort((a,b) => b.jumlah - a.jumlah);
-            const topSekolah = arrSekolah.slice(0, 10); 
+            // RENDER MATRIKS TABEL SEKOLAH
+            const containerMatriks = document.getElementById('containerMatriks');
+            containerMatriks.innerHTML = '';
             
-            const ctxSekolah = document.getElementById('chartSekolah').getContext('2d');
-            chartSekolahInstance = new Chart(ctxSekolah, {
-                type: 'bar',
-                data: {
-                    labels: topSekolah.map(s => s.nama),
-                    datasets: [{ label: 'Peserta Disubmit', data: topSekolah.map(s => s.jumlah), backgroundColor: '#8b5cf6', borderRadius: 4 }]
-                },
-                options: {
-                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } }, y: { grid: {display: false}, ticks: { font: {size:10} } } }
-                }
+            const cabangsDiEventIni = STATE.cabangs.filter(c => c.id_event === STATE.currentEventId);
+
+            if(STATE.sekolahList.length === 0) {
+                containerMatriks.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium">Gagal memuat daftar sekolah. Pastikan Role di sheet Users sudah benar.</div>`;
+                return;
+            }
+
+            STATE.sekolahList.forEach(sekolah => {
+                const pendaftarSekolah = STATE.allData.filter(d => d.asal_sekolah === sekolah);
+                let htmlCabangChips = '';
+                
+                cabangsDiEventIni.forEach(c => {
+                    const dataCabangIni = pendaftarSekolah.filter(d => d.cabang === c.nama_cabang);
+                    
+                    if(dataCabangIni.length > 0) {
+                        const hasDraft = dataCabangIni.some(d => d.status === 'DRAFT' || d.status === 'REVISI');
+                        
+                        if(hasDraft) {
+                            // Warna Kuning (Masih Draf)
+                            htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-[9px] font-bold uppercase whitespace-nowrap"><i data-lucide="edit-3" class="w-3 h-3"></i> ${c.nama_cabang} (Draf)</span>`;
+                        } else {
+                            // Warna Hijau (Sudah Terkunci / Final)
+                            htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-[9px] font-bold uppercase whitespace-nowrap"><i data-lucide="check-circle" class="w-3 h-3"></i> ${c.nama_cabang} (${dataCabangIni.length})</span>`;
+                        }
+                    } else {
+                        // Warna Abu-abu Transparan (Kosong / Belum Ikut)
+                        htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-transparent text-slate-400 border border-slate-200 border-dashed rounded-md text-[9px] font-medium uppercase whitespace-nowrap"><i data-lucide="minus" class="w-3 h-3"></i> ${c.nama_cabang}</span>`;
+                    }
+                });
+
+                let statusSekolahBadge = pendaftarSekolah.length === 0 
+                    ? `<span class="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded border border-red-100">Belum Berpartisipasi</span>` 
+                    : `<span class="text-[10px] font-bold text-emerald-600">${pendaftarSekolah.length} Delegasi Terdaftar</span>`;
+
+                containerMatriks.innerHTML += `
+                    <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-start gap-4 hover:bg-slate-50 transition-colors">
+                        <div class="w-full lg:w-1/3 shrink-0">
+                            <h4 class="font-extrabold text-slate-800 text-sm leading-tight">${sekolah}</h4>
+                            <div class="mt-1.5">${statusSekolahBadge}</div>
+                        </div>
+                        <div class="flex-1 flex flex-wrap gap-2">
+                            ${htmlCabangChips}
+                        </div>
+                    </div>
+                `;
             });
+            lucide.createIcons();
         }
 
         // ==========================================
-        // FITUR VERIFIKASI & BULK APPROVAL (Responsive Card)
+        // FITUR VERIFIKASI & BULK APPROVE (Responsive Card)
         // ==========================================
         function renderTabelVerifikasi() {
             const tBody = document.getElementById('tableVerifBody'); tBody.innerHTML = '';
