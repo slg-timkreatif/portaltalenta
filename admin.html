@@ -91,7 +91,7 @@
         
         <!-- SIDEBAR ADMIN (GELAP) -->
         <aside id="sidebar" class="hidden md:flex flex-col w-[280px] bg-slate-900 text-slate-300 h-full shrink-0 shadow-2xl z-20">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3 cursor-pointer" onclick="navigasiMundur('#beranda')">
                 <div class="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30 shrink-0"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
                 <div>
                     <h1 class="font-extrabold text-[15px] text-white leading-tight">PANEL KENDALI</h1>
@@ -106,7 +106,7 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto py-6 flex flex-col gap-2 px-3">
-                <button onclick="bukaBerandaEvent()" id="nav-events" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="layers" class="w-5 h-5"></i> Beranda Event</button>
+                <button onclick="window.location.hash = '#beranda'" id="nav-events" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i data-lucide="layers" class="w-5 h-5"></i> Beranda Event</button>
                 
                 <div id="menuEventContext" class="hidden flex-col gap-2 mt-2 pt-2 border-t border-slate-800">
                     <p class="text-[9px] font-extrabold text-brand-400 uppercase tracking-widest px-4 mb-1" id="sideContextEventName">EVENT TERPILIH</p>
@@ -135,7 +135,7 @@
             
             <!-- MOBILE HEADER TOP -->
             <header id="mobile-header" class="md:hidden bg-slate-900 border-b border-slate-800 px-5 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="navigasiMundur('#beranda')">
                     <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
                     <h2 class="font-extrabold text-white leading-tight text-sm">PANEL ADMIN</h2>
                 </div>
@@ -346,8 +346,8 @@
         </main>
 
         <!-- UX MOBILE ADMIN: BOTTOM NAVIGATION BAR -->
-        <nav id="mobile-nav-admin" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-[45] flex justify-between px-1 py-1 pb-safe shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] hidden">
-            <button onclick="bukaBerandaEvent()" class="flex flex-col items-center justify-center p-2 w-1/4 text-slate-400 hover:text-brand-600 transition-colors">
+        <nav id="mobile-nav-admin" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-[45] justify-between px-1 py-1 pb-safe shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] hidden">
+            <button onclick="window.location.hash = '#beranda'" class="flex flex-col items-center justify-center p-2 w-1/4 text-slate-400 hover:text-brand-600 transition-colors">
                 <i data-lucide="layers" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold">Event</span>
             </button>
             <button id="mob-nav-dashboard" onclick="switchView('dashboard')" class="flex flex-col items-center justify-center p-2 w-1/4 text-slate-400 hover:text-brand-600 transition-colors">
@@ -374,9 +374,29 @@
             user: null, rawData: [], allData: [], filteredData: [], events: [], settings: {}, currentEventId: null
         };
 
-        let chartStatusInstance = null;
-        let chartCabangInstance = null;
-        let chartSekolahInstance = null;
+        let chartStatusInstance = null; let chartCabangInstance = null; let chartSekolahInstance = null;
+
+        // ==========================================
+        // SISTEM ROUTING (HASH / TOMBOL BACK HP)
+        // ==========================================
+        window.addEventListener('hashchange', handleHashRouting);
+
+        function handleHashRouting() {
+            const hash = window.location.hash;
+            if (hash === '' || hash === '#beranda') {
+                showBerandaUI();
+            } else if (hash.startsWith('#event-')) {
+                const parts = hash.replace('#event-', '').split('/');
+                const idEvent = parts[0];
+                const view = parts.length > 1 ? parts[1] : 'dashboard'; // Default ke dashboard
+                showEventDetailUI(idEvent, view);
+            }
+        }
+
+        function navigasiMundur(fallbackHash) {
+            if (window.history.length > 2) { window.history.back(); } 
+            else { window.location.hash = fallbackHash; }
+        }
 
         window.onload = () => {
             callAPI('getSettings').then(res => {
@@ -428,7 +448,11 @@
             document.getElementById('sideRole').innerText = STATE.user.role;
             if (STATE.user.role === 'ADMIN') document.getElementById('menuAdminOnly').classList.remove('hidden');
             else document.getElementById('sideEvent').innerText = "Akses Event: " + (STATE.user.akses_event || 'Terbatas');
-            muatDataServer(false);
+            
+            muatDataServer(false).then(() => {
+                if(window.location.hash === '') { window.location.replace('#beranda'); } 
+                else { handleHashRouting(); }
+            });
         }
 
         async function callAPI(action, payload = {}) {
@@ -448,11 +472,10 @@
             });
         }
 
-        function bukaBerandaEvent() {
+        function showBerandaUI() {
             STATE.currentEventId = null;
             document.getElementById('menuEventContext').classList.remove('flex'); document.getElementById('menuEventContext').classList.add('hidden');
             
-            // Sembunyikan Nav Mobile Admin
             document.getElementById('mobile-nav-admin').classList.add('hidden'); document.getElementById('mobile-nav-admin').classList.remove('flex');
 
             ['dashboard', 'verifikasi', 'rekap'].forEach(v => { document.getElementById(`view-${v}`).classList.add('hidden'); document.getElementById(`view-${v}`).classList.remove('flex'); document.getElementById(`nav-${v}`).classList.remove('active'); });
@@ -461,9 +484,19 @@
             renderDashboardEvents();
         }
 
-        function switchView(viewName) {
-            if (!STATE.currentEventId) return;
-            document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex'); document.getElementById('nav-events').classList.remove('active');
+        function showEventDetailUI(idEvent, viewName) {
+            STATE.currentEventId = idEvent;
+            const ev = STATE.events.find(e => e.id_event === idEvent);
+            if(!ev) { window.location.replace('#beranda'); return; }
+            STATE.allData = STATE.rawData.filter(d => d.id_event === idEvent);
+
+            document.getElementById('sideContextEventName').innerText = ev.nama_event;
+            document.getElementById('menuEventContext').classList.remove('hidden'); document.getElementById('menuEventContext').classList.add('flex');
+            
+            document.getElementById('mobile-nav-admin').classList.remove('hidden'); document.getElementById('mobile-nav-admin').classList.add('flex');
+
+            document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex'); 
+            document.getElementById('nav-events').classList.remove('active');
             
             ['dashboard', 'verifikasi', 'rekap'].forEach(v => { 
                 document.getElementById(`view-${v}`).classList.add('hidden'); 
@@ -476,14 +509,21 @@
             document.getElementById(`view-${viewName}`).classList.remove('hidden'); 
             document.getElementById(`view-${viewName}`).classList.add('flex'); 
             document.getElementById(`nav-${viewName}`).classList.add('active');
-            
-            // Warna aktif untuk bottom nav
             document.getElementById(`mob-nav-${viewName}`).classList.remove('text-slate-400');
             document.getElementById(`mob-nav-${viewName}`).classList.add('text-brand-600');
 
-            const eventInfo = STATE.events.find(e => e.id_event === STATE.currentEventId);
-            const titles = { 'dashboard': 'Analitik: ' + eventInfo.nama_event, 'verifikasi': 'Antrean Verif: ' + eventInfo.nama_event, 'rekap': 'Ekspor Data: ' + eventInfo.nama_event };
+            const titles = { 'dashboard': 'Analitik: ' + ev.nama_event, 'verifikasi': 'Antrean Verif: ' + ev.nama_event, 'rekap': 'Ekspor Data: ' + ev.nama_event };
             document.getElementById('pageTitle').innerText = titles[viewName];
+
+            populateFilters();
+            renderDashboard();
+            renderTabelVerifikasi();
+            if(viewName === 'rekap') renderTabelRekap();
+        }
+
+        function switchView(viewName) {
+            if (!STATE.currentEventId) return;
+            window.location.hash = `#event-${STATE.currentEventId}/${viewName}`;
         }
 
         async function muatDataServer(forceRefresh = false) {
@@ -496,11 +536,10 @@
                 STATE.rawData = dashRes.data;
                 if (STATE.user.role === 'PANITIA') STATE.events = initRes.events.filter(e => e.id_event === STATE.user.akses_event);
                 else STATE.events = initRes.events;
-
-                if (STATE.currentEventId) bukaEventDetail(STATE.currentEventId);
-                else bukaBerandaEvent();
             } else { Swal.fire('Error', dashRes.message || "Gagal sinkronisasi data", 'error'); }
             showLoader(false);
+
+            if(forceRefresh) { handleHashRouting(); }
         }
 
         function formatIndoDate(dateString) {
@@ -527,7 +566,7 @@
                 if(ev.thumbnail) visualVisual = `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">`;
 
                 container.insertAdjacentHTML('beforeend', `
-                <div onclick="bukaEventDetail('${ev.id_event}')" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full">
+                <div onclick="window.location.hash = '#event-${ev.id_event}/dashboard'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full">
                     ${visualVisual}
                     <div class="p-6 flex-1 flex flex-col">
                         <div class="flex items-center gap-2 mb-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</div>
@@ -537,25 +576,6 @@
                 </div>`);
             });
             lucide.createIcons();
-        }
-
-        function bukaEventDetail(id_event) {
-            STATE.currentEventId = id_event;
-            const ev = STATE.events.find(e => e.id_event === id_event);
-            STATE.allData = STATE.rawData.filter(d => d.id_event === id_event);
-
-            document.getElementById('sideContextEventName').innerText = ev.nama_event;
-            document.getElementById('menuEventContext').classList.remove('hidden'); document.getElementById('menuEventContext').classList.add('flex');
-            
-            // Munculkan Nav Mobile Admin
-            document.getElementById('mobile-nav-admin').classList.remove('hidden'); document.getElementById('mobile-nav-admin').classList.add('flex');
-
-            populateFilters();
-            renderDashboard();
-            renderTabelVerifikasi();
-            renderTabelRekap();
-            
-            switchView('dashboard');
         }
 
         function populateFilters() {
@@ -584,13 +604,11 @@
 
             let sekolahSet = new Set(STATE.allData.map(d => d.asal_sekolah));
 
-            // Stats Numerik
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statSetuju').innerText = setuju;
             document.getElementById('statPending').innerText = pending;
             document.getElementById('statSekolah').innerText = sekolahSet.size;
 
-            // Update Badge Notifikasi di Sidebar & Bottom Nav
             const badgeSide = document.getElementById('badgeSideVerif');
             const badgeMob = document.getElementById('badgeMobVerif');
             if(pending > 0) {
@@ -600,14 +618,12 @@
                 badgeSide.classList.add('hidden'); badgeMob.classList.add('hidden');
             }
 
-            // Peringatan Draft
             const alertDraft = document.getElementById('alertDraft');
             if(unsubmittedTotal > 0) {
                 document.getElementById('statDraft').innerText = unsubmittedTotal;
                 alertDraft.classList.remove('hidden'); alertDraft.classList.add('flex');
             } else { alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); }
 
-            // Progress Bar Logic
             let progressPct = total > 0 ? Math.round((lockedTotal / total) * 100) : 0;
             document.getElementById('progressPercentage').innerText = progressPct + '%';
             document.getElementById('progressBar').style.width = progressPct + '%';
