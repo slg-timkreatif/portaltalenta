@@ -405,7 +405,9 @@
             currentEventId: null 
         };
 
-        let chartStatusInstance = null; let chartCabangInstance = null; let chartSekolahInstance = null;
+        let chartStatusInstance = null; 
+        let chartCabangInstance = null; 
+        let chartSekolahInstance = null;
 
         // KAMUS WARNA DINAMIS TAILWIND
         const TW_COLORS = {
@@ -606,7 +608,8 @@
             }
             showLoader(false);
 
-            if(forceRefresh) { handleHashRouting(); }
+            // FIX BUG: Otomatis render ulang tabel & grafik
+            handleHashRouting(); 
         }
 
         function formatIndoDate(dateString) {
