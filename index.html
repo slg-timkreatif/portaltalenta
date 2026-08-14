@@ -319,7 +319,7 @@
             <div class="p-6 md:p-8 overflow-y-auto max-h-[75vh]">
                 <form id="formPendaftaran" class="space-y-5">
                     <input type="hidden" id="inIdDaftar" value="NEW">
-                    
+
                     <div id="boxKategori" class="hidden relative">
                         <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 block">Kategori Lomba (PA/PI)</label>
                         <select id="inGenderKat" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm cursor-pointer transition-colors">
@@ -363,7 +363,7 @@
                         <input type="text" id="inKelas" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm transition-colors" placeholder="Contoh: Kelas 5 / Fase C">
                     </div>
 
-                    <!-- FITUR BARU: UPLOAD LINK (Dipindah ke Bawah) -->
+                    <!-- FITUR BARU: UPLOAD LINK -->
                     <div id="boxLampiran" class="hidden relative pt-2 border-t border-slate-100 fade-in">
                         <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1"><i data-lucide="link" class="w-3 h-3 text-brand-500"></i> Link Berkas Lampiran <span class="text-red-500">*</span></label>
                         <input type="url" id="inLinkSyarat" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3.5 text-sm font-medium text-brand-900 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm transition-colors placeholder:text-brand-300" placeholder="Paste link Google Drive / YouTube disini...">
@@ -571,7 +571,8 @@
             
             document.getElementById('loaderData').classList.add('hidden'); document.getElementById('loaderData').classList.remove('flex');
             
-            if (forceRefresh) handleHashRouting(); 
+            // FIX BUG: Pastikan selalu me-render ulang UI/Layar sesuai posisi URL saat ini
+            handleHashRouting(); 
         }
 
         // ==========================================
@@ -676,6 +677,7 @@
             cabangEvent.forEach(c => {
                 const terdaftar = pendaftarEventIni.filter(d => d.cabang === c.nama_cabang);
                 
+                // PENGGUNAAN WARNA DINAMIS DARI SPREADSHEET
                 const wKey = String(c.warna).toLowerCase().trim();
                 const theme = TW_COLORS[wKey] || TW_COLORS['blue'];
                 
@@ -807,6 +809,7 @@
             if(STATE.currentTipe === 'PA/PI') { bx.classList.remove('hidden'); bx.classList.add('block'); } 
             else { bx.classList.add('hidden'); bx.classList.remove('block'); }
 
+            // Deteksi Wajib Lampiran berdasarkan cabang saat ini
             let targetCabang = idEdit ? (STATE.dashboardData.find(d => d.id_daftar === idEdit)?.cabang || STATE.currentCabang) : STATE.currentCabang;
             const cabangInfo = STATE.cabangs.find(c => c.id_event === STATE.currentEventId && c.nama_cabang === targetCabang);
             const bxLampiran = document.getElementById('boxLampiran');
