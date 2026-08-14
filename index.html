@@ -45,7 +45,7 @@
         .nav-item:hover { background-color: #f1f5f9; color: #3b82f6; }
         .nav-item.active { background-color: #eff6ff; color: #2563eb; font-weight: 700; border-right: 3px solid #2563eb; }
 
-        /* PEROMBAKAN UX MOBILE: TABEL MENJADI KARTU PRESISI */
+        /* TABEL MENJADI KARTU PRESISI UNTUK MOBILE */
         @media (max-width: 767px) {
             .mobile-card-table thead { display: none; }
             .mobile-card-table tr { 
@@ -320,13 +320,6 @@
                 <form id="formPendaftaran" class="space-y-5">
                     <input type="hidden" id="inIdDaftar" value="NEW">
                     
-                    <!-- FITUR BARU: UPLOAD LINK -->
-                    <div id="boxLampiran" class="hidden relative pb-2 fade-in">
-                        <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1"><i data-lucide="link" class="w-3 h-3 text-brand-500"></i> Link Berkas Lampiran <span class="text-red-500">*</span></label>
-                        <input type="url" id="inLinkSyarat" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3.5 text-sm font-medium text-brand-900 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm transition-colors placeholder:text-brand-300" placeholder="Paste link Google Drive / YouTube disini...">
-                        <p class="text-[9px] text-slate-400 font-medium mt-1.5 leading-tight flex items-start gap-1"><i data-lucide="info" class="w-3 h-3 shrink-0 mt-0.5"></i> <span>Wajib! Pastikan pengaturan privasi link diset <b>"Siapa saja memiliki link (Anyone with the link)"</b>.</span></p>
-                    </div>
-
                     <div id="boxKategori" class="hidden relative">
                         <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 block">Kategori Lomba (PA/PI)</label>
                         <select id="inGenderKat" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm cursor-pointer transition-colors">
@@ -369,6 +362,14 @@
                         <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 block">Tingkat / Kelas</label>
                         <input type="text" id="inKelas" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm transition-colors" placeholder="Contoh: Kelas 5 / Fase C">
                     </div>
+
+                    <!-- FITUR BARU: UPLOAD LINK (Dipindah ke Bawah) -->
+                    <div id="boxLampiran" class="hidden relative pt-2 border-t border-slate-100 fade-in">
+                        <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1"><i data-lucide="link" class="w-3 h-3 text-brand-500"></i> Link Berkas Lampiran <span class="text-red-500">*</span></label>
+                        <input type="url" id="inLinkSyarat" class="w-full bg-brand-50 border border-brand-200 rounded-xl px-4 py-3.5 text-sm font-medium text-brand-900 focus:bg-white focus:ring-2 focus:ring-brand-500 outline-none shadow-sm transition-colors placeholder:text-brand-300" placeholder="Paste link Google Drive / YouTube disini...">
+                        <p class="text-[9px] text-slate-400 font-medium mt-1.5 leading-tight flex items-start gap-1"><i data-lucide="info" class="w-3 h-3 shrink-0 mt-0.5"></i> <span>Wajib! Pastikan pengaturan privasi link diset <b>"Siapa saja memiliki link (Anyone with the link)"</b>.</span></p>
+                    </div>
+
                 </form>
             </div>
             
@@ -675,9 +676,8 @@
             cabangEvent.forEach(c => {
                 const terdaftar = pendaftarEventIni.filter(d => d.cabang === c.nama_cabang);
                 
-                // PENGGUNAAN WARNA DINAMIS DARI SPREADSHEET
                 const wKey = String(c.warna).toLowerCase().trim();
-                const theme = TW_COLORS[wKey] || TW_COLORS['blue']; // Default ke biru jika warna tidak dikenal
+                const theme = TW_COLORS[wKey] || TW_COLORS['blue'];
                 
                 let bgClass = terdaftar.length > 0 ? `bg-white ${theme.border} shadow-sm ${theme.hoverBorder}` : "bg-white border-slate-200 shadow-sm hover:border-slate-300 opacity-90";
                 let iconWarna = terdaftar.length > 0 ? `${theme.bg} ${theme.text}` : "bg-slate-50 text-slate-400";
@@ -763,6 +763,7 @@
 
                 let catatanHtml = d.catatan ? `<div class="mt-2 md:mt-1 text-[10px] text-red-600 font-medium bg-red-50 p-2 md:p-1.5 rounded-lg border border-red-100 w-full text-left"><b>Catatan Panitia:</b> ${d.catatan}</div>` : '';
                 
+                // MUNCULKAN TOMBOL LINK BERKAS JIKA ADA
                 let linkHtml = d.link_syarat ? `<a href="${d.link_syarat}" target="_blank" class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 md:py-0.5 rounded border border-blue-100 hover:bg-blue-100 transition-colors flex items-center justify-center gap-1 mt-1.5 md:mt-0 w-full md:w-fit md:inline-flex ml-0 md:ml-1.5"><i data-lucide="link" class="w-3 h-3"></i> Ada Berkas</a>` : '';
 
                 tBody.innerHTML += `
