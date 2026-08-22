@@ -173,7 +173,7 @@
                     </button>
                 </div>
                 
-                <!-- MENU MASTER DATA (SEKARANG DINAMIS) -->
+                <!-- MENU MASTER DATA DINAMIS -->
                 <div id="menuAdminOnly" class="hidden mt-4 pt-4 border-t border-slate-800">
                     <p class="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest px-4 mb-2">Master Data</p>
                     <button onclick="bukaLinkDinamisAdmin('LINK_MASTER_EVENT', 'Master Event')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
@@ -220,14 +220,15 @@
 
             <div class="p-5 md:p-8 flex-1 pb-24 md:pb-8">
                 
-                <!-- VIEW 1: BERANDA EVENT -->
+                <!-- VIEW 1: BERANDA EVENT (PASTEL GRID DESIGN) -->
                 <div id="view-events" class="fade-in max-w-6xl mx-auto flex flex-col pb-10">
                     <div class="mb-8">
                         <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Beranda Event Terpusat</h2>
                         <p class="text-slate-500 font-medium mt-1 text-sm md:text-base">Pilih panel event lomba di bawah ini untuk memulai proses verifikasi dan pemantauan.</p>
                     </div>
 
-                    <div id="containerEvents" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    <!-- GRID EVENT KOTAK PASTEL -->
+                    <div id="containerEvents" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"></div>
                     
                     <div id="emptyEvents" class="flex-col items-center justify-center py-20 hidden opacity-60">
                         <i data-lucide="calendar-x" class="w-20 h-20 text-slate-300 mb-4"></i>
@@ -238,40 +239,40 @@
                 <!-- VIEW 2: DASHBOARD PANTAUAN SEKOLAH (MATRIKS) -->
                 <div id="view-dashboard" class="fade-in max-w-7xl mx-auto hidden flex-col gap-6 pb-10">
                     
-                    <!-- KARTU STATISTIK RINGKAS -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
-                            <div class="w-10 h-10 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="users" class="w-5 h-5"></i></div>
-                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Total Pendaftar</h4>
-                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statTotal">0</span>
+                    <!-- KARTU STATISTIK SOFT UI Penuh Warna -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                        <div class="bg-blue-50 rounded-[1.5rem] p-5 border border-blue-100 flex flex-col shadow-sm">
+                            <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20"><i data-lucide="users" class="w-6 h-6"></i></div>
+                            <h4 class="text-blue-700 font-extrabold text-[10px] md:text-xs uppercase tracking-widest mb-1">Total Pendaftar</h4>
+                            <span class="text-2xl md:text-3xl font-black text-blue-900" id="statTotal">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
-                            <div class="w-10 h-10 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
-                            <h4 class="text-emerald-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Sudah Disetujui</h4>
-                            <span class="text-2xl md:text-3xl font-black text-emerald-600" id="statSetuju">0</span>
+                        <div class="bg-emerald-50 rounded-[1.5rem] p-5 border border-emerald-100 flex flex-col shadow-sm">
+                            <div class="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
+                            <h4 class="text-emerald-700 font-extrabold text-[10px] md:text-xs uppercase tracking-widest mb-1">Sudah Disetujui</h4>
+                            <span class="text-2xl md:text-3xl font-black text-emerald-900" id="statSetuju">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-amber-200 bg-amber-50 shadow-sm flex flex-col">
-                            <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="clock" class="w-5 h-5"></i></div>
-                            <h4 class="text-amber-700 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Antrean Verif</h4>
-                            <span class="text-2xl md:text-3xl font-black text-amber-700" id="statPending">0</span>
+                        <div class="bg-amber-50 rounded-[1.5rem] p-5 border border-amber-100 flex flex-col shadow-sm">
+                            <div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center mb-4 shadow-lg shadow-amber-500/20"><i data-lucide="clock" class="w-6 h-6"></i></div>
+                            <h4 class="text-amber-700 font-extrabold text-[10px] md:text-xs uppercase tracking-widest mb-1">Antrean Verif</h4>
+                            <span class="text-2xl md:text-3xl font-black text-amber-900" id="statPending">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
-                            <div class="w-10 h-10 bg-purple-50 border border-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4"><i data-lucide="school" class="w-5 h-5"></i></div>
-                            <h4 class="text-slate-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-1">Instansi Terlibat</h4>
-                            <span class="text-2xl md:text-3xl font-black text-slate-800" id="statSekolahAktif">0</span>
+                        <div class="bg-purple-50 rounded-[1.5rem] p-5 border border-purple-100 flex flex-col shadow-sm">
+                            <div class="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mb-4 shadow-lg shadow-purple-500/20"><i data-lucide="school" class="w-6 h-6"></i></div>
+                            <h4 class="text-purple-700 font-extrabold text-[10px] md:text-xs uppercase tracking-widest mb-1">Instansi Terlibat</h4>
+                            <span class="text-2xl md:text-3xl font-black text-purple-900" id="statSekolahAktif">0</span>
                         </div>
                     </div>
 
                     <!-- ALERT DRAFT MENUMPUK -->
-                    <div id="alertDraft" class="hidden bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
-                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
+                    <div id="alertDraft" class="hidden bg-red-50 border border-red-200 rounded-[1.5rem] p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
                         <div>
                             <h4 class="font-extrabold text-red-800 text-sm">Masih Ada Sekolah yang Belum Mengunci Data!</h4>
-                            <p class="text-xs font-medium text-red-600 mt-1">Terdapat <span id="statDraft" class="font-black bg-white px-1.5 py-0.5 rounded shadow-sm mx-1 text-red-600">0</span> draft peserta yang ditahan (belum disubmit KS).</p>
+                            <p class="text-xs font-medium text-red-700 mt-1">Terdapat <span id="statDraft" class="font-black bg-white px-2 py-0.5 rounded shadow-sm mx-1 text-red-600">0</span> draft peserta yang ditahan (belum disubmit KS).</p>
                         </div>
                     </div>
 
-                    <!-- MATRIKS PARTISIPASI SEKOLAH (PENGGANTI CHART) -->
+                    <!-- MATRIKS PARTISIPASI SEKOLAH -->
                     <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                         <div class="p-5 md:p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                             <div>
@@ -418,40 +419,29 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyxDqzn2-Yj4BXmN_V3rF7djznKplMzfuMkeujiHBnOQEcUTaBDqvZWK1iCIjfDAkpFQg/exec";
         
         let STATE = { 
-            user: null, 
-            rawData: [], 
-            allData: [], 
-            filteredData: [], 
-            events: [],
-            cabangs: [],
-            sekolahList: [], // Data seluruh sekolah di Korwil
-            settings: {}, 
-            currentEventId: null 
+            user: null, rawData: [], allData: [], filteredData: [], events: [],
+            cabangs: [], sekolahList: [], settings: {}, currentEventId: null 
         };
 
-        // KAMUS WARNA DINAMIS TAILWIND
+        // KAMUS WARNA SOFT UI KHUSUS UNTUK KARTU GRID
         const TW_COLORS = {
-            'teal': { bg: 'bg-teal-50', text: 'text-teal-600', border: 'border-teal-200', hoverBorder: 'hover:border-teal-400', groupHoverBg: 'group-hover:bg-teal-500' },
-            'blue': { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hoverBorder: 'hover:border-blue-400', groupHoverBg: 'group-hover:bg-blue-500' },
-            'indigo': { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-200', hoverBorder: 'hover:border-indigo-400', groupHoverBg: 'group-hover:bg-indigo-500' },
-            'purple': { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hoverBorder: 'hover:border-purple-400', groupHoverBg: 'group-hover:bg-purple-500' },
-            'rose': { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', hoverBorder: 'hover:border-rose-400', groupHoverBg: 'group-hover:bg-rose-500' },
-            'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-400', groupHoverBg: 'group-hover:bg-emerald-500' },
-            'orange': { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', hoverBorder: 'hover:border-orange-400', groupHoverBg: 'group-hover:bg-orange-500' },
-            'red': { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200', hoverBorder: 'hover:border-red-400', groupHoverBg: 'group-hover:bg-red-500' },
-            'gray': { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-200', hoverBorder: 'hover:border-slate-400', groupHoverBg: 'group-hover:bg-slate-500' }
+            'teal': { card: 'bg-teal-50', icon: 'bg-teal-500', text: 'text-teal-700', shadow: 'shadow-teal-500/20' },
+            'blue': { card: 'bg-blue-50', icon: 'bg-blue-500', text: 'text-blue-700', shadow: 'shadow-blue-500/20' },
+            'indigo': { card: 'bg-indigo-50', icon: 'bg-indigo-500', text: 'text-indigo-700', shadow: 'shadow-indigo-500/20' },
+            'purple': { card: 'bg-purple-50', icon: 'bg-purple-500', text: 'text-purple-700', shadow: 'shadow-purple-500/20' },
+            'rose': { card: 'bg-rose-50', icon: 'bg-rose-500', text: 'text-rose-700', shadow: 'shadow-rose-500/20' },
+            'emerald': { card: 'bg-emerald-50', icon: 'bg-emerald-500', text: 'text-emerald-700', shadow: 'shadow-emerald-500/20' },
+            'orange': { card: 'bg-orange-50', icon: 'bg-orange-500', text: 'text-orange-700', shadow: 'shadow-orange-500/20' },
+            'red': { card: 'bg-red-50', icon: 'bg-red-500', text: 'text-red-700', shadow: 'shadow-red-500/20' },
+            'gray': { card: 'bg-slate-100', icon: 'bg-slate-500', text: 'text-slate-700', shadow: 'shadow-slate-500/20' }
         };
 
-        // ==========================================
-        // SISTEM ROUTING (HASH / TOMBOL BACK HP)
-        // ==========================================
         window.addEventListener('hashchange', handleHashRouting);
 
         function handleHashRouting() {
             const hash = window.location.hash;
-            if (hash === '' || hash === '#beranda') {
-                showBerandaUI();
-            } else if (hash.startsWith('#event-')) {
+            if (hash === '' || hash === '#beranda') showBerandaUI();
+            else if (hash.startsWith('#event-')) {
                 const parts = hash.replace('#event-', '').split('/');
                 const idEvent = parts[0];
                 const view = parts.length > 1 ? parts[1] : 'dashboard';
@@ -460,13 +450,10 @@
         }
 
         function navigasiMundur(fallbackHash) {
-            if (window.history.length > 2) { window.history.back(); } 
-            else { window.location.hash = fallbackHash; }
+            if (window.history.length > 2) window.history.back(); 
+            else window.location.hash = fallbackHash; 
         }
 
-        // ==========================================
-        // LOGIN & INISIALISASI
-        // ==========================================
         window.onload = () => {
             callAPI('getSettings').then(res => {
                 if(res.status === 'success' && res.data) {
@@ -528,8 +515,8 @@
             }
             
             muatDataServer(false).then(() => {
-                if(window.location.hash === '') { window.location.replace('#beranda'); } 
-                else { handleHashRouting(); }
+                if(window.location.hash === '') window.location.replace('#beranda'); 
+                else handleHashRouting(); 
             });
         }
 
@@ -554,9 +541,6 @@
             });
         }
 
-        // ==========================================
-        // FUNGSI PINTASAN DINAMIS ADMIN
-        // ==========================================
         function bukaLinkDinamisAdmin(kunciSetelan, namaFitur) {
             if(STATE.settings && STATE.settings[kunciSetelan] && STATE.settings[kunciSetelan].trim() !== "") {
                 window.open(STATE.settings[kunciSetelan], '_blank');
@@ -565,13 +549,9 @@
             }
         }
 
-        // ==========================================
-        // UI & ROUTING VIEWS
-        // ==========================================
         function showBerandaUI() {
             STATE.currentEventId = null;
             document.getElementById('menuEventContext').classList.remove('flex'); document.getElementById('menuEventContext').classList.add('hidden');
-            
             document.getElementById('mobile-nav-admin').classList.add('hidden'); document.getElementById('mobile-nav-admin').classList.remove('flex');
 
             ['dashboard', 'verifikasi', 'rekap'].forEach(v => { 
@@ -596,7 +576,6 @@
 
             document.getElementById('sideContextEventName').innerText = ev.nama_event;
             document.getElementById('menuEventContext').classList.remove('hidden'); document.getElementById('menuEventContext').classList.add('flex');
-            
             document.getElementById('mobile-nav-admin').classList.remove('hidden'); document.getElementById('mobile-nav-admin').classList.add('flex');
 
             document.getElementById('view-events').classList.add('hidden'); document.getElementById('view-events').classList.remove('flex'); 
@@ -622,7 +601,6 @@
 
             populateFilters();
             
-            // Panggil render fungsi sesuai View
             if(viewName === 'dashboard') renderDashboardMatriks();
             else if(viewName === 'verifikasi') renderTabelVerifikasi();
             else if(viewName === 'rekap') renderTabelRekap();
@@ -641,7 +619,7 @@
             
             if(dashRes.status === 'success' && initRes.status === 'success') {
                 STATE.rawData = dashRes.data;
-                STATE.sekolahList = dashRes.sekolahList || []; // TARIK DATA SELURUH SEKOLAH DARI BACKEND
+                STATE.sekolahList = dashRes.sekolahList || []; 
                 STATE.cabangs = initRes.cabangs;
                 
                 if (STATE.user.role === 'PANITIA') STATE.events = initRes.events.filter(e => e.id_event === STATE.user.akses_event);
@@ -650,7 +628,6 @@
                 Swal.fire('Error', dashRes.message || "Gagal sinkronisasi data", 'error'); 
             }
             showLoader(false);
-
             handleHashRouting(); 
         }
 
@@ -661,6 +638,9 @@
             } return dateString;
         }
 
+        // ==========================================
+        // RENDER EVENT CARD ADMIN MENGGUNAKAN PASTEL GRID
+        // ==========================================
         function renderDashboardEvents() {
             const container = document.getElementById('containerEvents'); container.innerHTML = '';
             if(STATE.events.length === 0) { document.getElementById('emptyEvents').classList.remove('hidden'); document.getElementById('emptyEvents').classList.add('flex'); return; }
@@ -672,26 +652,28 @@
                 const pendaftarEventIni = STATE.rawData.filter(d => d.id_event === ev.id_event);
                 const countPending = pendaftarEventIni.filter(d => d.status === 'PENDING').length;
                 
-                let textInfo = countPending > 0 
-                    ? `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded text-[10px] font-extrabold border border-amber-200 flex items-center gap-1"><div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div> ${countPending} Antrean Masuk</span>` 
-                    : `<span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Antrean Kosong</span>`;
+                let statusTeks = countPending > 0 
+                    ? `<span class="text-[11px] font-black text-amber-600 flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div> ${countPending} Antrean</span>` 
+                    : `<span class="text-[11px] text-slate-400 font-medium">Antrean Kosong</span>`;
 
-                let visualVisual = ev.thumbnail 
-                    ? `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">` 
-                    : `<div class="w-full h-36 flex items-center justify-center text-white ${theme.bg.replace('50', '500')}"><i data-lucide="${ev.ikon}" class="w-14 h-14 opacity-90"></i></div>`;
+                let thumbnailHtml = ev.thumbnail 
+                    ? `<div class="w-full h-24 mb-4 rounded-xl overflow-hidden shadow-sm"><img src="${ev.thumbnail}" class="w-full h-full object-cover"></div>`
+                    : `<div class="w-12 h-12 md:w-14 md:h-14 rounded-full ${theme.icon} text-white flex items-center justify-center mb-4 shadow-lg ${theme.shadow} transition-transform group-hover:scale-110"><i data-lucide="${ev.ikon || 'calendar'}" class="w-6 h-6 md:w-7 md:h-7"></i></div>`;
 
-                container.insertAdjacentHTML('beforeend', `
-                <div onclick="window.location.hash = '#event-${ev.id_event}/dashboard'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full">
-                    ${visualVisual}
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="flex items-center gap-2 mb-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</div>
-                        <h4 class="text-xl font-black text-slate-800 leading-tight mb-4 group-hover:text-brand-600 transition-colors">${ev.nama_event}</h4>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <div>${textInfo}</div>
-                            <div class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:border-transparent group-hover:text-white transition-all text-slate-400"><i data-lucide="arrow-right" class="w-4 h-4"></i></div>
+                container.innerHTML += `
+                    <div onclick="window.location.hash = '#event-${ev.id_event}/dashboard'" class="${theme.card} rounded-[1.5rem] p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 cursor-pointer group flex flex-col justify-between min-h-[160px] relative overflow-hidden border border-white/50">
+                        ${thumbnailHtml}
+                        <div class="flex-1 mt-1">
+                            <h4 class="font-extrabold text-[15px] md:text-[17px] text-slate-800 leading-snug mb-1 group-hover:${theme.text} transition-colors line-clamp-2">${ev.nama_event}</h4>
+                            <p class="text-[10px] md:text-[11px] text-slate-500 font-medium flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</p>
                         </div>
-                    </div>
-                </div>`);
+                        <div class="mt-4 flex items-center justify-between border-t border-black/5 pt-3">
+                            ${statusTeks}
+                            <div class="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center text-slate-400 group-hover:${theme.text} group-hover:bg-white transition-all">
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </div>
+                        </div>
+                    </div>`;
             });
             lucide.createIcons();
         }
@@ -718,18 +700,14 @@
             let setuju = STATE.allData.filter(d => d.status === 'DISETUJUI').length;
             let pending = STATE.allData.filter(d => d.status === 'PENDING').length;
             let draft = STATE.allData.filter(d => d.status === 'DRAFT' || d.status === 'REVISI').length;
-            let lockedTotal = setuju + pending; 
 
-            // Statistik Angka Atas
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statSetuju').innerText = setuju;
             document.getElementById('statPending').innerText = pending;
             
-            // Instansi Terlibat (Yang punya setidaknya 1 data non-draft)
             let sekolahAktifSet = new Set(STATE.allData.filter(d => d.status !== 'DRAFT').map(d => d.asal_sekolah));
             document.getElementById('statSekolahAktif').innerText = sekolahAktifSet.size + " dari " + STATE.sekolahList.length;
 
-            // Update Badge Sidebar
             const badgeSide = document.getElementById('badgeSideVerif');
             const badgeMob = document.getElementById('badgeMobVerif');
             if(pending > 0) {
@@ -739,7 +717,6 @@
                 badgeSide.classList.add('hidden'); badgeMob.classList.add('hidden');
             }
 
-            // Peringatan Draft
             const alertDraft = document.getElementById('alertDraft');
             if(draft > 0) {
                 document.getElementById('statDraft').innerText = draft;
@@ -748,7 +725,6 @@
                 alertDraft.classList.add('hidden'); alertDraft.classList.remove('flex'); 
             }
 
-            // RENDER MATRIKS TABEL SEKOLAH
             const containerMatriks = document.getElementById('containerMatriks');
             containerMatriks.innerHTML = '';
             
@@ -770,14 +746,11 @@
                         const hasDraft = dataCabangIni.some(d => d.status === 'DRAFT' || d.status === 'REVISI');
                         
                         if(hasDraft) {
-                            // Warna Kuning (Masih Draf)
                             htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-[9px] font-bold uppercase whitespace-nowrap"><i data-lucide="edit-3" class="w-3 h-3"></i> ${c.nama_cabang} (Draf)</span>`;
                         } else {
-                            // Warna Hijau (Sudah Terkunci / Final)
                             htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-[9px] font-bold uppercase whitespace-nowrap"><i data-lucide="check-circle" class="w-3 h-3"></i> ${c.nama_cabang} (${dataCabangIni.length})</span>`;
                         }
                     } else {
-                        // Warna Abu-abu Transparan (Kosong / Belum Ikut)
                         htmlCabangChips += `<span class="inline-flex items-center gap-1 px-2 py-1 bg-transparent text-slate-400 border border-slate-200 border-dashed rounded-md text-[9px] font-medium uppercase whitespace-nowrap"><i data-lucide="minus" class="w-3 h-3"></i> ${c.nama_cabang}</span>`;
                     }
                 });
@@ -821,7 +794,6 @@
             antreanData.forEach((d, idx) => {
                 const dateWaktu = new Date(d.waktu).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
                 
-                // MUNCULKAN TOMBOL LINK BERKAS UNTUK PANITIA JIKA ADA
                 let linkHtml = d.link_syarat ? `<a href="${d.link_syarat}" target="_blank" class="mt-2 flex items-center justify-end md:justify-start gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800"><i data-lucide="link" class="w-3 h-3"></i> Cek Berkas Lampiran</a>` : '';
 
                 tBody.innerHTML += `
@@ -877,7 +849,7 @@
             
             Swal.fire({
                 title: `Setujui ${ids.length} Peserta?`,
-                html: "Sistem akan memproses persetujuan dokumen ini secara masal ke dalam Server.",
+                html: "Sistem akan memproses persetujuan dokumen ini secara masal.",
                 icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Sahkan Semua', confirmButtonColor: '#10b981', borderRadius: '1.5rem'
             }).then(async (r) => {
                 if (r.isConfirmed) {
@@ -967,7 +939,6 @@
             if (STATE.filteredData.length === 0) { Swal.fire('Kosong', 'Tidak ada data untuk diekspor.', 'info'); return; }
             const eventInfo = STATE.events.find(e => e.id_event === STATE.currentEventId);
             
-            // MUNCULKAN LINK BERKAS PADA HASIL EXPORT CSV
             const headers = ['No', 'ID Daftar', 'Event', 'Asal Sekolah', 'Nama Peserta', 'Jenis Kelamin', 'NISN', 'Tempat Tgl Lahir', 'Kelas', 'Cabang Lomba', 'Kategori', 'Status', 'Link Berkas', 'Catatan'];
             let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
 
