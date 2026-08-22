@@ -45,7 +45,6 @@
         .nav-item:hover { background-color: #f1f5f9; color: #3b82f6; }
         .nav-item.active { background-color: #eff6ff; color: #2563eb; font-weight: 700; border-right: 3px solid #2563eb; }
 
-        /* TABEL MENJADI KARTU PRESISI UNTUK MOBILE */
         @media (max-width: 767px) {
             .mobile-card-table thead { display: none; }
             .mobile-card-table tr { 
@@ -127,7 +126,6 @@
                 </ul>
 
                 <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest px-6 mb-2">Pintasan Informasi</p>
-                <!-- MENU DINAMIS & AUTO-HIDE -->
                 <ul class="space-y-1 px-3">
                     <li id="wrapMenu1" class="hidden"><button onclick="bukaLinkDinamis('LINK_1', document.getElementById('labelMenu1').innerText)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50"><i id="iconMenu1" data-lucide="external-link" class="w-5 h-5"></i><span id="labelMenu1" class="text-sm font-semibold">Pintasan 1</span></button></li>
                     <li id="wrapMenu2" class="hidden"><button onclick="bukaLinkDinamis('LINK_2', document.getElementById('labelMenu2').innerText)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50"><i id="iconMenu2" data-lucide="external-link" class="w-5 h-5"></i><span id="labelMenu2" class="text-sm font-semibold">Pintasan 2</span></button></li>
@@ -181,7 +179,7 @@
                     </div>
                 </div>
 
-                <!-- LEVEL 2: DASHBOARD CABANG -->
+                <!-- LEVEL 2: DASHBOARD CABANG (PASTEL GRID DESIGN) -->
                 <div id="view-dashboard-cabang" class="fade-in max-w-5xl mx-auto hidden flex-col pb-10">
                     <div class="mb-6">
                         <button onclick="navigasiMundur('#beranda')" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
@@ -214,15 +212,15 @@
 
                     <div class="flex items-center justify-between mb-4 px-2">
                         <h3 class="text-lg font-black text-slate-800">Daftar Cabang Lomba</h3>
-                        <button onclick="window.location.hash = '#cabang-' + encodeURIComponent('SEMUA')" class="text-xs font-bold text-brand-600 hover:text-brand-800 flex items-center gap-1">
-                            <i data-lucide="users" class="w-4 h-4"></i> Lihat Semua
-                        </button>
                     </div>
 
-                    <div id="containerGridCabang" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"></div>
+                    <!-- GRID KARTU CABANG PASTEL BENTUK KOTAK -->
+                    <div id="containerGridCabang" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                        <!-- Kartu akan di-render di sini -->
+                    </div>
                 </div>
 
-                <!-- LEVEL 3: RUANG KERJA CABANG -->
+                <!-- LEVEL 3: RUANG KERJA CABANG (FOKUS TABEL) -->
                 <div id="view-ruang-cabang" class="slide-in-right max-w-6xl mx-auto hidden flex-col pb-10">
                     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
                         <button onclick="navigasiMundur('#event-' + STATE.currentEventId)" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200">
@@ -385,16 +383,17 @@
             currentEventId: null, currentCabang: null, currentTipe: null, isClosed: false 
         };
 
+        // KAMUS WARNA SOFT UI KHUSUS UNTUK KARTU GRID
         const TW_COLORS = {
-            'teal': { bg: 'bg-teal-50', text: 'text-teal-600', border: 'border-teal-200', hoverBorder: 'hover:border-teal-400', groupHoverBg: 'group-hover:bg-teal-500' },
-            'blue': { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hoverBorder: 'hover:border-blue-400', groupHoverBg: 'group-hover:bg-blue-500' },
-            'indigo': { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-200', hoverBorder: 'hover:border-indigo-400', groupHoverBg: 'group-hover:bg-indigo-500' },
-            'purple': { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hoverBorder: 'hover:border-purple-400', groupHoverBg: 'group-hover:bg-purple-500' },
-            'rose': { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', hoverBorder: 'hover:border-rose-400', groupHoverBg: 'group-hover:bg-rose-500' },
-            'emerald': { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-400', groupHoverBg: 'group-hover:bg-emerald-500' },
-            'orange': { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', hoverBorder: 'hover:border-orange-400', groupHoverBg: 'group-hover:bg-orange-500' },
-            'red': { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200', hoverBorder: 'hover:border-red-400', groupHoverBg: 'group-hover:bg-red-500' },
-            'gray': { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-200', hoverBorder: 'hover:border-slate-400', groupHoverBg: 'group-hover:bg-slate-500' }
+            'teal': { card: 'bg-teal-50', icon: 'bg-teal-500', text: 'text-teal-700', shadow: 'shadow-teal-500/20' },
+            'blue': { card: 'bg-blue-50', icon: 'bg-blue-500', text: 'text-blue-700', shadow: 'shadow-blue-500/20' },
+            'indigo': { card: 'bg-indigo-50', icon: 'bg-indigo-500', text: 'text-indigo-700', shadow: 'shadow-indigo-500/20' },
+            'purple': { card: 'bg-purple-50', icon: 'bg-purple-500', text: 'text-purple-700', shadow: 'shadow-purple-500/20' },
+            'rose': { card: 'bg-rose-50', icon: 'bg-rose-500', text: 'text-rose-700', shadow: 'shadow-rose-500/20' },
+            'emerald': { card: 'bg-emerald-50', icon: 'bg-emerald-500', text: 'text-emerald-700', shadow: 'shadow-emerald-500/20' },
+            'orange': { card: 'bg-orange-50', icon: 'bg-orange-500', text: 'text-orange-700', shadow: 'shadow-orange-500/20' },
+            'red': { card: 'bg-red-50', icon: 'bg-red-500', text: 'text-red-700', shadow: 'shadow-red-500/20' },
+            'gray': { card: 'bg-slate-100', icon: 'bg-slate-500', text: 'text-slate-700', shadow: 'shadow-slate-500/20' }
         };
 
         function formatIndoDate(dateString) {
@@ -561,7 +560,7 @@
             }
             
             STATE.events.forEach(ev => {
-                const hexWarna = TW_COLORS[ev.warna.toLowerCase()] ? TW_COLORS[ev.warna.toLowerCase()].bg.replace('50', '500') : 'bg-blue-500';
+                const hexWarna = TW_COLORS[ev.warna.toLowerCase()] ? TW_COLORS[ev.warna.toLowerCase()].icon : 'bg-blue-500';
                 const pendaftarEventIni = STATE.dashboardData.filter(d => d.id_event === ev.id_event);
                 const countDraft = pendaftarEventIni.filter(d => d.status === 'DRAFT' || d.status === 'REVISI').length;
                 const countLock = pendaftarEventIni.filter(d => d.status !== 'DRAFT' && d.status !== 'REVISI').length;
@@ -574,7 +573,7 @@
                 let visualVisual = ev.thumbnail ? `<img src="${ev.thumbnail}" class="w-full h-36 object-cover border-b border-slate-100">` : `<div class="w-full h-36 flex items-center justify-center text-white ${hexWarna}"><i data-lucide="${ev.ikon}" class="w-14 h-14 opacity-90"></i></div>`;
                 
                 container.insertAdjacentHTML('beforeend', `
-                    <div onclick="window.location.hash = '#event-${ev.id_event}'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:border-brand-300 transition-all duration-300 cursor-pointer group flex flex-col h-full relative">
+                    <div onclick="window.location.hash = '#event-${ev.id_event}'" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col h-full relative">
                         ${badgeTertutup}${visualVisual}
                         <div class="p-6 flex-1 flex flex-col">
                             <div class="flex items-center gap-2 mb-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Batas: ${formatIndoDate(ev.batas_daftar)}</div>
@@ -612,6 +611,9 @@
             renderGridCabangCard();
         }
 
+        // ==========================================
+        // FUNGSI RENDER GRID PASTEL BENTUK KOTAK
+        // ==========================================
         function renderGridCabangCard() {
             const container = document.getElementById('containerGridCabang'); container.innerHTML = '';
             const cabangEvent = STATE.cabangs.filter(c => c.id_event === STATE.currentEventId);
@@ -646,26 +648,30 @@
                 const wKey = String(c.warna).toLowerCase().trim();
                 const theme = TW_COLORS[wKey] || TW_COLORS['blue'];
                 
-                let bgClass = terdaftar.length > 0 ? `bg-white ${theme.border} shadow-sm ${theme.hoverBorder}` : "bg-white border-slate-200 shadow-sm hover:border-slate-300 opacity-90";
-                let iconWarna = terdaftar.length > 0 ? `${theme.bg} ${theme.text}` : "bg-slate-50 text-slate-400";
-                let hoverInject = terdaftar.length > 0 ? theme.groupHoverBg : "group-hover:bg-slate-500";
-                
                 let statusTeks = terdaftar.length > 0 
-                    ? `<div class="flex items-baseline md:flex-col gap-1 md:gap-0"><span class="text-sm md:text-xs font-black ${theme.text}">${terdaftar.length}</span> <span class="text-[10px] text-slate-400 font-bold">Peserta</span></div>` 
-                    : `<span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-2 py-1 rounded md:bg-transparent md:p-0">Belum ada</span>`;
+                    ? `<span class="text-[11px] font-black ${theme.text}">${terdaftar.length} Peserta</span>` 
+                    : `<span class="text-[11px] text-slate-400 font-medium">Kosong</span>`;
 
                 container.innerHTML += `
-                    <div onclick="window.location.hash = '#cabang-' + encodeURIComponent('${c.nama_cabang}') + '|' + encodeURIComponent('${c.tipe}')" class="flex flex-row md:flex-col items-center md:items-start p-4 md:p-5 rounded-2xl border transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer ${bgClass} group">
-                        <div class="w-12 h-12 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors mr-4 md:mr-0 md:mb-4 ${hoverInject} group-hover:text-white ${iconWarna}">
-                            <i data-lucide="${c.ikon || 'award'}" class="w-6 h-6 md:w-5 md:h-5"></i>
+                    <div onclick="window.location.hash = '#cabang-' + encodeURIComponent('${c.nama_cabang}') + '|' + encodeURIComponent('${c.tipe}')" class="${theme.card} rounded-[1.5rem] p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 cursor-pointer group flex flex-col justify-between min-h-[160px] relative overflow-hidden border border-white/50">
+                        
+                        <!-- Lingkaran Ikon -->
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full ${theme.icon} text-white flex items-center justify-center mb-4 shadow-lg ${theme.shadow} transition-transform group-hover:scale-110">
+                            <i data-lucide="${c.ikon || 'award'}" class="w-6 h-6 md:w-7 md:h-7"></i>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-extrabold text-sm text-slate-800 leading-tight mb-0.5 md:mb-1 group-hover:${theme.text} truncate">${c.nama_cabang}</h4>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${c.tipe === 'PA/PI' ? 'Putra / Putri' : 'Umum / Tim'}</p>
+                        
+                        <!-- Teks Cabang -->
+                        <div class="flex-1 mt-1">
+                            <h4 class="font-extrabold text-[14px] md:text-[15px] text-slate-800 leading-snug mb-1 group-hover:${theme.text} transition-colors line-clamp-2">${c.nama_cabang}</h4>
+                            <p class="text-[10px] md:text-[11px] text-slate-500 font-medium">${c.tipe === 'PA/PI' ? 'Kategori Putra/Putri' : 'Umum / Beregu'}</p>
                         </div>
-                        <div class="mt-0 md:mt-auto pt-0 md:pt-3 border-none md:border-t md:border-slate-100 flex items-center justify-end md:justify-between w-auto md:w-full ml-3 md:ml-0 shrink-0">
-                            <div class="mr-3 md:mr-0 text-right md:text-left">${statusTeks}</div>
-                            <i data-lucide="chevron-right" class="w-5 h-5 md:w-4 md:h-4 text-slate-300 group-hover:${theme.text}"></i>
+                        
+                        <!-- Indikator Bawah -->
+                        <div class="mt-4 flex items-center justify-between border-t border-black/5 pt-3">
+                            ${statusTeks}
+                            <div class="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center text-slate-400 group-hover:${theme.text} group-hover:bg-white transition-all">
+                                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                            </div>
                         </div>
                     </div>`;
             });
