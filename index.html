@@ -121,7 +121,7 @@ const TALENTA_API_URL = SUPABASE_URL + '/functions/v1/talenta-api';
 let loginTab='guru', currentUser=null, settingsData={}, eventsData=[], allEventsData=[], cabangsData=[], dashboardData=[], sekolahList=[], aksesListData=[];
 let selectedEventId=null, editingId=null, masterEventId=null, pantauanEventId=null, activeNav='beranda';
 let verifFilter={status:'',sekolah:'',cabang:''}, selectedVerif=new Set();
-let expScope={event:'',cabang:'',sekolah:'',finalOnly:true,delim:';'};
+let expScope={event:'',cabang:'',sekolah:'',mode:'penjurian',delim:';'};
 let listPage=1; const PER_PAGE=10;
 let autoRefreshTimer=null;
 let historyState={t:'nav',nav:'beranda'};
@@ -283,7 +283,7 @@ async function submitAksesForm(email){var pin=document.getElementById('ak-pin').
 async function toggleAkses(email,ab){var a=aksesListData.find(function(x){return x.email===email;});if(!a)return;var p={email:email,nama_panitia:a.nama_panitia,role:a.role,akses_event:a.akses_event,is_active:ab,valid_until:a.valid_until};var r=await talenta('savePanitia',p);if(r.status==='success'){toast(ab?'Akun diaktifkan.':'Akun dinonaktifkan.');await loadAksesList();renderMasterAkses();}else toast(r.message||'Gagal mengubah status.','error');}
 function deleteAkses(email){confirmDialog('Akun ini akan dihapus dan tidak bisa login lagi.',async function(){var r=await talenta('deletePanitia',{email:email});if(r.status==='success'){toast('Akun dihapus.');await loadAksesList();renderMasterAkses();}else toast(r.message||'Gagal menghapus.','error');},{title:'Hapus Akun',confirmText:'Hapus',danger:true});}
 
-/* ================= PUSAT EKSPOR (3A) + TERBITKAN (3B) ================= */
+/* ================= PUSAT EKSPOR (3 MODE) + TERBITKAN ================= */
 function expScopeRows(){
   var base=dashboardData;
   if(currentUser.role==='PANITIA') base=base.filter(function(d){return d.id_event===currentUser.akses_event;});
@@ -294,10 +294,11 @@ function expScopeRows(){
     return true;
   });
 }
+function expPrefix(){return expScope.mode==='penjurian'?'penjurian':(expScope.mode==='lengkap'?'penjurian-lengkap':'rekap');}
 function expFilename(prefix){
   var ev=expScope.event||(currentUser.role==='PANITIA'?currentUser.akses_event:'SEMUA-EVENT');
   var cb=expScope.cabang?(getCabang(expScope.cabang)?getCabang(expScope.cabang).nama_cabang.replace(/[^a-z0-9]+/gi,'-'):'cabang'):'SEMUA-CABANG';
-  var st=expScope.finalOnly?'FINAL':'SEMUA';
+  var st=(expScope.mode==='rekap')?'SEMUA':'FINAL';
   var d=new Date();var ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   return prefix+'_'+ev+'_'+cb+'_'+st+'_'+ds+'.csv';
 }
@@ -308,20 +309,25 @@ function buildCSV(rows,mode){
     header=['id_daftar','id_event','nama_event','id_cabang','nama_cabang','kategori','nama_peserta','nisn','jk','asal_sekolah','kelas','link_berkas','status'];
     lines=[header.join(d)];
     rows.forEach(function(r){lines.push([r.id_daftar,r.id_event,getEventName(r.id_event),r.cabang_id,getCabangName(r.cabang_id),r.kategori_gender||'Umum',r.nama_peserta,r.nisn||'',r.jenis_kelamin||'',r.asal_sekolah,r.kelas||'',r.link_syarat||'',r.status_daftar].map(csvCell).join(d));});
-  } else {
-    header=['no','id_daftar','waktu','event','cabang','kategori','nama_peserta','nisn','jk','kelas','asal_sekolah','guru_pendamping','status','juara','link_sertifikat'];
+  } else if(mode==='lengkap'){
+    header=['id_daftar','id_event','nama_event','id_cabang','nama_cabang','kategori','nama_peserta','nisn','jk','tempat_lahir','tanggal_lahir','asal_sekolah','kelas','guru_pendamping','waktu_kirim','link_berkas','status'];
     lines=[header.join(d)];
-    rows.forEach(function(r,i){lines.push([i+1,r.id_daftar,r.created_at,getEventName(r.id_event),getCabangName(r.cabang_id),r.kategori_gender||'',r.nama_peserta,r.nisn||'',r.jenis_kelamin||'',r.kelas||'',r.asal_sekolah,r.guru_pendamping_nama,r.status_daftar,r.status_juara||'',r.link_sertifikat||''].map(csvCell).join(d));});
+    rows.forEach(function(r){lines.push([r.id_daftar,r.id_event,getEventName(r.id_event),r.cabang_id,getCabangName(r.cabang_id),r.kategori_gender||'Umum',r.nama_peserta,r.nisn||'',r.jenis_kelamin||'',r.tempat_lahir||'',r.tanggal_lahir||'',r.asal_sekolah,r.kelas||'',r.guru_pendamping_nama||'',r.created_at||'',r.link_syarat||'',r.status_daftar].map(csvCell).join(d));});
+  } else {
+    header=['no','id_daftar','waktu','event','cabang','kategori','nama_peserta','nisn','jk','kelas','tempat_lahir','tanggal_lahir','asal_sekolah','guru_pendamping','status','catatan','juara','link_sertifikat','link_berkas'];
+    lines=[header.join(d)];
+    rows.forEach(function(r,i){lines.push([i+1,r.id_daftar,r.created_at,getEventName(r.id_event),getCabangName(r.cabang_id),r.kategori_gender||'',r.nama_peserta,r.nisn||'',r.jenis_kelamin||'',r.kelas||'',r.tempat_lahir||'',r.tanggal_lahir||'',r.asal_sekolah,r.guru_pendamping_nama||'',r.status_daftar,r.catatan_panitia||'',r.status_juara||'',r.link_sertifikat||'',r.link_syarat||''].map(csvCell).join(d));});
   }
   return lines.join('\n');
 }
-function downloadExport(mode){
+function downloadExport(){
   var rows=window.__exportRows||[];
   if(!rows.length){toast('Tidak ada data untuk diekspor.','error');return;}
+  var mode=expScope.mode;
   var doIt=function(){
     var csv="\uFEFF"+buildCSV(rows,mode);
     var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=expFilename(mode==='penjurian'?'penjurian':'rekap');a.click();
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=expFilename(expPrefix());a.click();
     toast('File CSV berhasil diunduh.');
   };
   var w=window.__exportWarnings||0;
@@ -335,11 +341,11 @@ async function renderEkspor(){
   var scope=expScopeRows();
   var finalRows=scope.filter(function(r){return r.status_daftar==='DISETUJUI'||r.status_daftar==='TERKUNCI';});
   var nonFinal=scope.length-finalRows.length;
-  var missingNisn=finalRows.filter(function(r){return !r.nisn||!String(r.nisn).trim();}).length;
-  var missingBerkas=finalRows.filter(function(r){var c=getCabang(r.cabang_id);return c&&c.wajib_lampiran&&(!r.link_syarat||!String(r.link_syarat).trim());}).length;
-  var seen={},dup=0;finalRows.forEach(function(r){if(r.nisn){var k=r.nisn+'|'+r.cabang_id;if(seen[k])dup++;else seen[k]=1;}});
+  var exportRows=(expScope.mode==='rekap')?scope:finalRows;
+  var missingNisn=exportRows.filter(function(r){return !r.nisn||!String(r.nisn).trim();}).length;
+  var missingBerkas=exportRows.filter(function(r){var c=getCabang(r.cabang_id);return c&&c.wajib_lampiran&&(!r.link_syarat||!String(r.link_syarat).trim());}).length;
+  var seen={},dup=0;exportRows.forEach(function(r){if(r.nisn){var k=r.nisn+'|'+r.cabang_id;if(seen[k])dup++;else seen[k]=1;}});
   var warnings=missingNisn+missingBerkas+dup;
-  var exportRows=expScope.finalOnly?finalRows:scope;
   window.__exportRows=exportRows; window.__exportWarnings=warnings;
   var diSetujui=scope.filter(function(r){return r.status_daftar==='DISETUJUI';}).length;
   var terkunci=scope.filter(function(r){return r.status_daftar==='TERKUNCI';}).length;
@@ -350,31 +356,36 @@ async function renderEkspor(){
   var cbOptions=cabangsData.filter(function(c){return !scopeEventId||c.id_event===scopeEventId;});
   var cbSel='<select onchange="expScope.cabang=this.value;renderEkspor()" class="px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500" aria-label="Filter cabang"><option value="">Semua Cabang</option>'+cbOptions.map(function(c){var s=expScope.cabang===c.id?'selected':'';return '<option value="'+c.id+'" '+s+'>'+esc(c.nama_cabang)+'</option>';}).join('')+'</select>';
   var skSel='<select onchange="expScope.sekolah=this.value;renderEkspor()" class="px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500" aria-label="Filter sekolah"><option value="">Semua Sekolah</option>'+sekolahList.map(function(s){var s2=expScope.sekolah===s?'selected':'';return '<option '+s2+'>'+esc(s)+'</option>';}).join('')+'</select>';
+  var modes=[
+    {id:'penjurian',icon:'target',name:'CSV Penjurian',desc:'Field ramping, hanya final (DISETUJUI+TERKUNCI). Untuk impor aplikasi juri.'},
+    {id:'lengkap',icon:'file-plus',name:'CSV Penjurian Lengkap',desc:'Tambah tempat/tgl lahir, guru pendamping, waktu kirim (validasi usia).'},
+    {id:'rekap',icon:'archive',name:'CSV Rekap Total',desc:'Semua field + semua status. Untuk arsip & rekap admin.'}
+  ];
+  var modeCards=modes.map(function(m){var act=expScope.mode===m.id;return '<label class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer '+(act?'border-blue-500 bg-blue-50':'bg-white hover:border-blue-300')+'"><input type="radio" name="expmode" '+(act?'checked':'')+' onchange="expScope.mode=\''+m.id+'\';renderEkspor()" class="mt-1 w-4 h-4"><span><span class="flex items-center gap-1.5 text-sm font-semibold"><i data-lucide="'+m.icon+'" class="w-4 h-4"></i>'+m.name+'</span><span class="block text-xs text-slate-500 mt-0.5">'+m.desc+'</span></span></label>';}).join('');
+  var modeName=expScope.mode==='penjurian'?'CSV Penjurian':(expScope.mode==='lengkap'?'CSV Penjurian Lengkap':'CSV Rekap Total');
   function gateItem(ok,label,count){return '<li class="flex items-center gap-2 text-sm '+(ok?'text-emerald-700':'text-red-600')+'"><i data-lucide="'+(ok?'check-circle':'alert-circle')+'" class="w-4 h-4 flex-shrink-0"></i>'+label+': <b>'+count+'</b></li>';}
   main.innerHTML='<h2 class="text-lg font-bold mb-1">Pusat Ekspor & Data Penjurian</h2>'
-    +'<p class="text-sm text-slate-500 mb-5">Hasilkan data siap-impor untuk aplikasi penjurian, dengan kontrol kualitas.</p>'
+    +'<p class="text-sm text-slate-500 mb-5">Pilih mode ekspor sesuai kebutuhan, dengan kontrol kualitas data.</p>'
     +'<div class="grid lg:grid-cols-2 gap-4 items-start">'
     +'<div class="space-y-4">'
     +'<div class="bg-white border rounded-2xl p-5"><h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i>Scope Ekspor</h3>'
     +'<div class="grid grid-cols-1 gap-2">'+evSel+cbSel+skSel+'</div>'
+    +'<div class="mt-3 space-y-2">'+modeCards+'</div>'
     +'<div class="flex flex-wrap gap-4 mt-3">'
-    +'<label class="flex items-center gap-2 text-sm"><input type="checkbox" '+(expScope.finalOnly?'checked':'')+' onchange="expScope.finalOnly=this.checked;renderEkspor()" class="w-4 h-4"> Hanya Final (DISETUJUI+TERKUNCI)</label>'
     +'<span class="text-sm text-slate-500">Delimiter:</span>'
     +'<label class="flex items-center gap-1 text-sm"><input type="radio" name="delim" '+(expScope.delim===';'?'checked':'')+' onchange="expScope.delim=\';\';renderEkspor()"> ; (Excel)</label>'
     +'<label class="flex items-center gap-1 text-sm"><input type="radio" name="delim" '+(expScope.delim===','?'checked':'')+' onchange="expScope.delim=\',\';renderEkspor()"> , (Sistem)</label>'
     +'</div></div>'
     +'<div class="bg-white border rounded-2xl p-5"><h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i>Gerbang Kualitas Data</h3><ul class="space-y-2">'
-    +gateItem(true,'Peserta final siap ekspor',exportRows.length)
-    +gateItem(nonFinal===0,'Belum final (draft/pending/revisi) '+(expScope.finalOnly?'[dikecualikan]':''),nonFinal)
-    +gateItem(missingNisn===0,'Final dengan NISN kosong',missingNisn)
-    +gateItem(missingBerkas===0,'Final kurang berkas wajib',missingBerkas)
+    +gateItem(true,'Baris siap ekspor',exportRows.length)
+    +gateItem(expScope.mode==='rekap'?true:(nonFinal===0),'Belum final '+(expScope.mode==='rekap'?'[ikut ter-ekspor]':'[dikecualikan]'),nonFinal)
+    +gateItem(missingNisn===0,'NISN kosong',missingNisn)
+    +gateItem(missingBerkas===0,'Kurang berkas wajib',missingBerkas)
     +gateItem(dup===0,'NISN ganda dalam cabang sama',dup)
     +'</ul></div>'
     +'<div class="bg-white border rounded-2xl p-5"><h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i>Unduh</h3>'
-    +'<div class="flex flex-wrap gap-2">'
-    +'<button onclick="downloadExport(\'penjurian\')" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 flex items-center gap-2"><i data-lucide="file-json" class="w-4 h-4"></i> CSV Penjurian</button>'
-    +'<button onclick="downloadExport(\'rekap\')" class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 flex items-center gap-2"><i data-lucide="table" class="w-4 h-4"></i> CSV Rekap</button>'
-    +'</div><p class="text-xs text-slate-400 mt-2">Nama file: <code class="bg-slate-100 px-1 rounded">'+esc(expFilename('penjurian'))+'</code></p></div>'
+    +'<button onclick="downloadExport()" class="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Unduh '+modeName+'</button>'
+    +'<p class="text-xs text-slate-400 mt-2">Nama file: <code class="bg-slate-100 px-1 rounded">'+esc(expFilename(expPrefix()))+'</code></p></div>'
     +'</div>'
     +(isAdmin?'<div class="bg-white border rounded-2xl p-5"><h3 class="font-semibold mb-3 flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4"></i>Terbitkan Data Penjurian (Snapshot)</h3>'
       +'<p class="text-sm text-slate-500 mb-3">Mengunci peserta <b>DISETUJUI</b> pada scope terpilih menjadi <b>TERKUNCI</b> agar data penjurian stabil & tidak berubah.</p>'
@@ -402,7 +413,7 @@ function bukaPenjurian(){
 /* ================= PANDUAN & CREDITS ================= */
 function guideCard(icon,title,steps){return '<div class="bg-white border rounded-2xl p-5"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0"><i data-lucide="'+icon+'" class="w-5 h-5"></i></div><h3 class="font-bold">'+title+'</h3></div><ol class="space-y-2.5">'+steps.map(function(s,i){return '<li class="flex gap-3 text-sm text-slate-600"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center">'+(i+1)+'</span><span>'+s+'</span></li>';}).join('')+'</ol></div>';}
 function creditsCard(){return '<div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><i data-lucide="award" class="w-5 h-5"></i></div><div><h3 class="font-bold">Portal Talenta <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full ml-1">v2.0</span></h3><p class="text-xs text-blue-100">Sistem Manajemen Delegasi Lomba & Event</p></div></div><div class="space-y-2 text-sm text-blue-50"><p class="flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4 flex-shrink-0"></i> Milik: Korwilcambidik Selogiri</p><p class="flex items-center gap-2"><i data-lucide="code-2" class="w-4 h-4 flex-shrink-0"></i> Dikembangkan oleh: <b>Ekwan Nugroho, S.Pd.I</b></p><p class="flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 flex-shrink-0"></i> Teknologi: Supabase • Tailwind CSS • Lucide Icons</p><p class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 flex-shrink-0"></i> Login guru terpusat (SSO) database guru kecamatan</p></div><p class="mt-4 pt-4 border-t border-white/20 text-[11px] text-blue-200">© 2026 Korwilcambidik Selogiri. Seluruh hak cipta.</p></div>';}
-function buildGuideSections(role){var h='';h+=guideCard('log-in','Masuk & Navigasi (Semua Pengguna)',['Guru/KS masuk lewat tab <b>Guru / Sekolah</b> menggunakan email + PIN akun pusat kecamatan.','Panitia/Admin masuk lewat tab <b>Panitia / Admin</b> menggunakan email + PIN yang dibuat Administrator.','Gunakan menu pada sidebar kiri untuk berpindah halaman (tombol ☰ di pojok kiri atas pada HP).','Tombol <b>kembali (back)</b> di HP akan membawa Anda ke menu sebelumnya, bukan menutup aplikasi.','Data diperbarui otomatis setiap 60 detik; tombol ⟳ tersedia untuk muat ulang manual.','Akhiri sesi dengan ikon keluar di bagian bawah sidebar demi keamanan akun.']);if(!role||role==='GURU'||role==='KS'){h+=guideCard('users','Panduan Guru / Sekolah',['Buka <b>Beranda</b>, pilih event lomba yang berstatus AKTIF.','Perhatikan indikator kuota pada tiap cabang (mis. 1/1). Cabang bertanda PENUH tidak bisa ditambah.','Klik <b>Tambah Peserta</b>, lengkapi data siswa, lalu <b>Simpan Draft</b>.','Kolom link berkas hanya muncul pada cabang yang mewajibkan lampiran.','Peserta dapat diedit/dihapus selama status masih <b>DRAFT</b> atau <b>REVISI</b>.','Klik ikon <b>Unduh Bukti</b> untuk mencetak bukti pendaftaran (simpan sebagai PDF).','Jika peserta berstatus <b>REVISI</b>, baca catatan panitia, perbaiki, lalu simpan kembali.']);}if(!role||role==='KS'){h+=guideCard('lock','Panduan Kepala Sekolah',['Periksa seluruh draft peserta yang dimasukkan guru di sekolah Anda.','Jika sudah final, klik <b>Kunci & Kirim Semua</b> untuk mengirim ke panitia.','Setelah dikunci, status menjadi <b>PENDING</b> dan data tidak dapat diubah lagi.','Perhatikan peringatan kuning bila masih ada draft yang belum dikunci.']);}if(!role||role==='PANITIA'||role==='ADMIN'){h+=guideCard('clipboard-check','Panduan Panitia',['Buka menu <b>Verifikasi</b> untuk melihat antrean peserta berstatus PENDING.','Persempit tampilan dengan filter Status / Instansi / Cabang Lomba.','Periksa berkas lewat tautan "Lihat Berkas" sebelum mengambil keputusan.','Klik <b>Setujui</b> atau <b>Revisi</b> (wajib menulis catatan revisi).','Gunakan centang + <b>Setujui Terpilih</b> untuk verifikasi massal.','Setelah disetujui, input pemenang lewat tombol <b>Juara</b> beserta link sertifikat.']);}if(!role||role==='ADMIN'){h+=guideCard('settings','Panduan Administrator',['<b>Master Event & Cabang</b>: buat, ubah, atau hapus event dan cabang lomba baru.','<b>Manajemen Akses</b>: tambah akun panitia/admin, reset PIN, atur masa berlaku, nonaktifkan akun.','<b>Pengaturan</b>: ganti gambar latar beranda dan pintasan informasi untuk guru.','<b>Pantauan Sekolah</b>: matriks partisipasi + peringatan sekolah yang belum mengunci data.','<b>Pusat Ekspor</b>: hasilkan CSV penjurian/rekap dengan filter event+cabang, gerbang kualitas, dan Terbitkan Data Penjurian.']);}h+=creditsCard();return h;}
+function buildGuideSections(role){var h='';h+=guideCard('log-in','Masuk & Navigasi (Semua Pengguna)',['Guru/KS masuk lewat tab <b>Guru / Sekolah</b> menggunakan email + PIN akun pusat kecamatan.','Panitia/Admin masuk lewat tab <b>Panitia / Admin</b> menggunakan email + PIN yang dibuat Administrator.','Gunakan menu pada sidebar kiri untuk berpindah halaman (tombol ☰ di pojok kiri atas pada HP).','Tombol <b>kembali (back)</b> di HP akan membawa Anda ke menu sebelumnya, bukan menutup aplikasi.','Data diperbarui otomatis setiap 60 detik; tombol ⟳ tersedia untuk muat ulang manual.','Akhiri sesi dengan ikon keluar di bagian bawah sidebar demi keamanan akun.']);if(!role||role==='GURU'||role==='KS'){h+=guideCard('users','Panduan Guru / Sekolah',['Buka <b>Beranda</b>, pilih event lomba yang berstatus AKTIF.','Perhatikan indikator kuota pada tiap cabang (mis. 1/1). Cabang bertanda PENUH tidak bisa ditambah.','Klik <b>Tambah Peserta</b>, lengkapi data siswa, lalu <b>Simpan Draft</b>.','Kolom link berkas hanya muncul pada cabang yang mewajibkan lampiran.','Peserta dapat diedit/dihapus selama status masih <b>DRAFT</b> atau <b>REVISI</b>.','Klik ikon <b>Unduh Bukti</b> untuk mencetak bukti pendaftaran (simpan sebagai PDF).','Jika peserta berstatus <b>REVISI</b>, baca catatan panitia, perbaiki, lalu simpan kembali.']);}if(!role||role==='KS'){h+=guideCard('lock','Panduan Kepala Sekolah',['Periksa seluruh draft peserta yang dimasukkan guru di sekolah Anda.','Jika sudah final, klik <b>Kunci & Kirim Semua</b> untuk mengirim ke panitia.','Setelah dikunci, status menjadi <b>PENDING</b> dan data tidak dapat diubah lagi.','Perhatikan peringatan kuning bila masih ada draft yang belum dikunci.']);}if(!role||role==='PANITIA'||role==='ADMIN'){h+=guideCard('clipboard-check','Panduan Panitia',['Buka menu <b>Verifikasi</b> untuk melihat antrean peserta berstatus PENDING.','Persempit tampilan dengan filter Status / Instansi / Cabang Lomba.','Periksa berkas lewat tautan "Lihat Berkas" sebelum mengambil keputusan.','Klik <b>Setujui</b> atau <b>Revisi</b> (wajib menulis catatan revisi).','Gunakan centang + <b>Setujui Terpilih</b> untuk verifikasi massal.','Setelah disetujui, input pemenang lewat tombol <b>Juara</b> beserta link sertifikat.']);}if(!role||role==='ADMIN'){h+=guideCard('settings','Panduan Administrator',['<b>Master Event & Cabang</b>: buat, ubah, atau hapus event dan cabang lomba baru.','<b>Manajemen Akses</b>: tambah akun panitia/admin, reset PIN, atur masa berlaku, nonaktifkan akun.','<b>Pengaturan</b>: ganti gambar latar beranda dan pintasan informasi untuk guru.','<b>Pantauan Sekolah</b>: matriks partisipasi + peringatan sekolah yang belum mengunci data.','<b>Pusat Ekspor</b>: 3 mode ekspor (Penjurian / Penjurian Lengkap / Rekap Total) dengan gerbang kualitas, dan Terbitkan Data Penjurian.']);}h+=creditsCard();return h;}
 function renderPanduan(){var main=document.getElementById('main-content');main.innerHTML='<h2 class="text-lg font-bold mb-1">Panduan Penggunaan</h2><p class="text-sm text-slate-500 mb-5">Langkah-langkah penggunaan aplikasi sesuai peran Anda ('+esc(roleLabelOf(currentUser.role))+'), serta informasi tentang aplikasi.</p><div class="grid md:grid-cols-2 gap-4 items-start">'+buildGuideSections(currentUser.role)+'</div>';renderIcons();}
 function openPublicGuide(){openModalHook();var modal=document.createElement('div');modal.id='modal-generic';modal.className='fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';modal.innerHTML='<div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true"><div class="px-6 py-4 border-b flex items-center justify-between sticky top-0 bg-white z-10"><h3 class="font-bold">Panduan Penggunaan Portal Talenta</h3><button onclick="closeModal()" class="p-1.5 rounded-lg hover:bg-slate-100" aria-label="Tutup"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="p-6 grid md:grid-cols-2 gap-4 items-start">'+buildGuideSections(null)+'</div></div>';document.body.appendChild(modal);renderIcons();}
 
