@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Progres Pendaftaran - Portal Talenta</title>
+<meta name="description" content="Pantauan publik progres pendaftaran lomba SD se-Kecamatan Selogiri.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8A%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif']}}}};</script>
+<style>
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+</style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased">
+
+<header class="bg-gradient-to-r from-blue-700 to-indigo-700 text-white">
+  <div class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center"><i data-lucide="award" class="w-5 h-5"></i></div>
+      <div>
+        <h1 class="font-bold text-lg leading-tight">Progres Pendaftaran</h1>
+        <p class="text-xs text-blue-100">Portal Talenta • Korwilcambidik Selogiri</p>
+      </div>
+    </div>
+    <a href="index.html" class="text-xs bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg flex items-center gap-1"><i data-lucide="log-in" class="w-3.5 h-3.5"></i> Masuk Portal</a>
+  </div>
+</header>
+
+<main id="main" class="max-w-6xl mx-auto p-4 md:p-6">
+
+  <div class="bg-white border rounded-2xl p-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div>
+      <label for="ev-sel" class="block text-xs font-medium mb-1">Event</label>
+      <select id="ev-sel" onchange="onEvChange(this.value)" class="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500"></select>
+    </div>
+    <div>
+      <label for="q" class="block text-xs font-medium mb-1">Cari sekolah</label>
+      <input id="q" oninput="setQ(this.value)" placeholder="Ketik nama sekolah..." class="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+    <div>
+      <label for="sort" class="block text-xs font-medium mb-1">Urutan sekolah</label>
+      <select id="sort" onchange="setSort(this.value)" class="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="pemacu">Pemacu (tertinggal di atas)</option>
+        <option value="abjad">Abjad A–Z</option>
+      </select>
+    </div>
+    <div class="flex items-end gap-2">
+      <button onclick="manualReload()" class="px-3 py-2 rounded-lg border bg-white hover:bg-slate-50 text-sm flex items-center gap-1"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Muat Ulang</button>
+      <span class="text-[11px] text-slate-400">Update: <span id="updated">-</span></span>
+    </div>
+  </div>
+
+  <div id="countdown" class="mb-4"></div>
+  <div id="cards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4"></div>
+  <div id="bars" class="mb-4"></div>
+  <div id="matrix" class="mb-4"></div>
+  <div id="list" class="mb-6"></div>
+
+  <footer class="text-center text-[11px] text-slate-400 pb-6">
+    <p>Halaman ini hanya menampilkan <b>data agregat (hitungan)</b> — tanpa data pribadi peserta.</p>
+    <p class="mt-1">&copy; 2026 Korwilcambidik Selogiri • Dikembangkan oleh Ekwan Nugroho, S.Pd.I</p>
+  </footer>
+</main>
+
+<script>
+var SUPABASE_URL='https://qamqqwfzhyiihqyzliwq.supabase.co';
+var ANON_KEY='sb_publishable_O_qwmOBPSU8dylEPCrPRAA_GC25Ii5x';
+var API=SUPABASE_URL+'/functions/v1/talenta-api';
+var DATA=null,curEvent=null,sortMode='pemacu',q='';
+
+var COLOR_MAP={blue:{bg:'#dbeafe',text:'#1d4ed8'},emerald:{bg:'#d1fae5',text:'#047857'},orange:{bg:'#ffedd5',text:'#c2410c'},teal:{bg:'#ccfbf1',text:'#0f766e'},red:{bg:'#fee2e2',text:'#b91c1c'},indigo:{bg:'#e0e7ff',text:'#4338ca'},purple:{bg:'#f3e8ff',text:'#7e22ce'},rose:{bg:'#ffe4e6',text:'#be123c'},amber:{bg:'#fef3c7',text:'#b45309'},sky:{bg:'#e0f2fe',text:'#0369a1'},slate:{bg:'#f1f5f9',text:'#475569'},gray:{bg:'#f3f4f6',text:'#4b5563'},grey:{bg:'#f3f4f6',text:'#4b5563'}};
+function getColor(w){return COLOR_MAP[w]||COLOR_MAP.blue;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function renderIcons(){if(window.lucide)lucide.createIcons();}
+function parseBatas(s){if(!s)return null;var m=String(s).trim().match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);if(!m)return null;var d=+m[1],mo=+m[2],y=+m[3];if(y<100)y+=2000;return new Date(y,mo-1,d,23,59,59);}
+function statusBadge(st){
+  if(st==='KIRIM')return '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">Sudah Kirim</span>';
+  if(st==='PROSES')return '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 whitespace-nowrap">Proses</span>';
+  return '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-600 whitespace-nowrap">Belum Mulai</span>';
+}
+function card(icon,label,val,sub,color){var c=getColor(color);return '<div class="bg-white border rounded-2xl p-4"><div class="flex items-center justify-between"><div><p class="text-xs text-slate-400">'+label+'</p><p class="text-2xl font-bold">'+val+'</p><p class="text-[11px] text-slate-400">'+sub+'</p></div><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:'+c.bg+';color:'+c.text+'"><i data-lucide="'+icon+'" class="w-5 h-5"></i></div></div></div>';}
+
+async function loadProgres(idEvent){
+  var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON_KEY},body:JSON.stringify({action:'getProgresPublik',payload:{id_event:idEvent||undefined}})});
+  var d=await res.json();
+  if(d.status!=='success')throw new Error(d.message||'Gagal memuat data');
+  DATA=d;curEvent=d.event;
+}
+function sortSchools(arr){
+  var order={BELUM:0,PROSES:1,KIRIM:2};
+  if(sortMode==='abjad')return arr.slice().sort(function(a,b){return a.nama.localeCompare(b.nama);});
+  return arr.slice().sort(function(a,b){return (order[a.status]-order[b.status])||(a.cabangTerisi-b.cabangTerisi)||a.nama.localeCompare(b.nama);});
+}
+function filterSchools(){
+  var arr=(DATA.schools||[]).filter(function(s){return !q||s.nama.toLowerCase().indexOf(q)>-1;});
+  return sortSchools(arr);
+}
+function setQ(v){q=String(v||'').toLowerCase();renderMatrix();renderList();renderIcons();}
+function setSort(v){sortMode=v;renderMatrix();renderList();renderIcons();}
+async function onEvChange(v){try{await loadProgres(v);renderAll();}catch(e){console.error(e);}}
+async function manualReload(){try{await loadProgres(curEvent?curEvent.id_event:undefined);renderAll();}catch(e){console.error(e);}}
+
+function renderControls(){
+  document.getElementById('ev-sel').innerHTML=(DATA.events||[]).map(function(e){
+    var s=curEvent&&e.id_event===curEvent.id_event?'selected':'';
+    return '<option value="'+e.id_event+'" '+s+'>'+esc(e.nama_event)+(e.status!=='BUKA'?' (tutup)':'')+'</option>';
+  }).join('');
+  document.getElementById('updated').textContent=new Date().toLocaleTimeString('id-ID');
+}
+function renderCountdown(){
+  var el=document.getElementById('countdown');
+  var b=parseBatas(curEvent?curEvent.batas_daftar:'');
+  if(!b||!curEvent){el.innerHTML='';return;}
+  var days=Math.ceil((b.getTime()-Date.now())/86400000);
+  var txt=days>0?('Sisa <b>'+days+'</b> hari lagi'):(days===0?'<b>Hari ini</b> batas akhirnya!':'Batas daftar <b>telah lewat</b>');
+  var cls=days>3?'bg-emerald-50 border-emerald-200 text-emerald-800':(days>=0?'bg-amber-50 border-amber-200 text-amber-800':'bg-red-50 border-red-200 text-red-700');
+  el.innerHTML='<div class="'+cls+' border rounded-xl px-4 py-3 text-sm flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4 flex-shrink-0"></i><span>Batas daftar: <b>'+esc(curEvent.batas_daftar)+'</b> — '+txt+'</span></div>';
+}
+function renderCards(){
+  var s=DATA.summary||{};
+  document.getElementById('cards').innerHTML=
+    card('school','Sekolah Sudah Kirim',(s.sekolahSudahKirim||0)+' / '+(s.totalSekolah||0),'dari total sekolah','blue')
+    +card('users','Total Peserta',s.totalPeserta||0,'semua status','indigo')
+    +card('clock','Menunggu Verifikasi',s.totalPending||0,'baris PENDING','amber')
+    +card('check-circle','Peserta Disetujui',s.totalFinal||0,'baris final','emerald');
+}
+function renderBars(){
+  var el=document.getElementById('bars');
+  var cab=DATA.cabangs||[],schools=DATA.schools||[];
+  if(!cab.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="bg-white border rounded-2xl p-5"><h3 class="font-semibold text-sm mb-4 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4"></i>Keterisian Cabang (sekolah yang sudah mengisi peserta final)</h3>'
+    +cab.map(function(c){
+      var filled=schools.filter(function(s){return (s.perCabang[c.id]||0)>0;}).length;
+      var pct=schools.length?Math.round(filled/schools.length*100):0;
+      return '<div class="mb-3"><div class="flex justify-between text-xs mb-1"><span class="font-medium">'+esc(c.nama_cabang)+'</span><span class="text-slate-500">'+filled+'/'+schools.length+' sekolah ('+pct+'%)</span></div>'
+        +'<div class="h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:'+pct+'%;background:'+getColor(c.warna_cabang||'blue').text+'"></div></div></div>';
+    }).join('')+'</div>';
+}
+function renderMatrix(){
+  var el=document.getElementById('matrix');
+  var cab=DATA.cabangs||[],schools=filterSchools();
+  if(!cab.length||!schools.length){el.innerHTML='<div class="bg-white border rounded-2xl p-10 text-center text-slate-400 text-sm">Belum ada data untuk ditampilkan.</div>';return;}
+  var rows=schools.map(function(s){
+    var cells=cab.map(function(c){var v=s.perCabang[c.id]||0;
+      return '<td class="px-2 py-1.5 text-center">'+(v>0?'<span class="inline-block min-w-[24px] px-1 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[11px]">'+v+'</span>':'<span class="inline-block w-2 h-2 rounded-full bg-slate-200"></span>')+'</td>';}).join('');
+    return '<tr class="border-t hover:bg-slate-50"><td class="px-3 py-1.5 text-[11px] font-medium sticky left-0 bg-white">'+esc(s.nama)+'</td>'+cells+'<td class="px-2 py-1.5 text-center">'+statusBadge(s.status)+'</td></tr>';
+  }).join('');
+  el.innerHTML='<div class="bg-white border rounded-2xl overflow-hidden"><div class="px-5 py-4 border-b flex items-center justify-between"><h3 class="font-semibold text-sm">Matriks Partisipasi (peserta final per cabang)</h3><span class="text-[11px] text-slate-400">'+schools.length+' sekolah</span></div><div class="overflow-x-auto"><table class="w-full text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="px-3 py-2 text-left sticky left-0 bg-slate-50 min-w-[150px]">Sekolah</th>'+cab.map(function(c){return '<th class="px-2 py-2 text-center min-w-[70px]">'+esc(c.nama_cabang)+'</th>';}).join('')+'<th class="px-2 py-2 text-center min-w-[90px]">Status</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function renderList(){
+  var el=document.getElementById('list');
+  var schools=filterSchools();var totalCab=(DATA.cabangs||[]).length||1;
+  if(!schools.length){el.innerHTML='<div class="bg-white border rounded-2xl p-10 text-center text-slate-400 text-sm">Tidak ada sekolah yang cocok.</div>';return;}
+  el.innerHTML='<h3 class="font-semibold text-sm mb-3 flex items-center gap-2"><i data-lucide="list-ordered" class="w-4 h-4"></i>Progres per Sekolah</h3><div class="grid md:grid-cols-2 gap-3">'+schools.map(function(s){
+    var pct=Math.round((s.cabangTerisi||0)/totalCab*100);
+    return '<div class="bg-white border rounded-xl p-4">'
+      +'<div class="flex items-center justify-between gap-2 mb-2"><span class="font-semibold text-sm truncate">'+esc(s.nama)+'</span>'+statusBadge(s.status)+'</div>'
+      +'<div class="h-2 bg-slate-100 rounded-full overflow-hidden mb-1.5"><div class="h-full rounded-full bg-blue-600" style="width:'+pct+'%"></div></div>'
+      +'<div class="flex justify-between text-[11px] text-slate-500"><span>'+(s.cabangTerisi||0)+'/'+totalCab+' cabang terisi ('+pct+'%)</span><span>'+s.total+' peserta • '+s.final+' final</span></div>'
+      +'</div>';
+  }).join('')+'</div>';
+}
+function renderAll(){renderControls();renderCountdown();renderCards();renderBars();renderMatrix();renderList();renderIcons();}
+async function boot(){
+  try{await loadProgres(undefined);renderAll();}
+  catch(e){document.getElementById('main').innerHTML='<div class="bg-white border rounded-2xl p-10 text-center text-slate-500 text-sm">Gagal memuat data progres. Periksa koneksi lalu muat ulang halaman.</div>';}
+}
+document.addEventListener('DOMContentLoaded',function(){
+  renderIcons();boot();
+  setInterval(function(){if(!document.hidden){loadProgres(curEvent?curEvent.id_event:undefined).then(renderAll).catch(function(){});}},60000);
+});
+</script>
+</body>
+</html>
