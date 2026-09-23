@@ -309,18 +309,56 @@ function cetakKolektif(){
   var draftCount=rows.filter(function(r){return r.status_daftar==='DRAFT'||r.status_daftar==='REVISI';}).length;
   var lockedTimes=rows.map(function(r){return r.locked_at;}).filter(Boolean);
   var waktuKirimTxt=lockedTimes.length?fmtWaktu(Math.max.apply(null,lockedTimes.map(function(t){return new Date(t).getTime();}))):'Belum dikunci / belum dikirim';
-  var trs=rows.map(function(r,i){
-    var jkCell=(function(){if(isTimCabang(r.cabang_id)){return countAnggota(r.daftar_anggota)+' angg.';}return (r.jenis_kelamin==='L'?'L':'P');})();
-    return '<tr>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+(i+1)+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;">'+esc(r.nama_peserta)+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.nisn||'-')+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+jkCell+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;">'+esc(formatTTL(r.tempat_lahir,r.tanggal_lahir))+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.kelas||'-')+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;">'+esc(getCabangName(r.cabang_id))+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.kategori_gender||'Umum')+'</td>'
-    +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.status_daftar)+'</td></tr>';}).join('');
+  var body='';
+  rows.forEach(function(r,i){
+    if(isTimCabang(r.cabang_id)){
+      var nAng=countAnggota(r.daftar_anggota);
+      body+='<tr>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+(i+1)+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;"><b>'+esc(r.nama_peserta)+'</b><br><span style="font-size:9px;color:#555;">('+nAng+' anggota)</span></td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">Kelompok</td>'
+        +'<td style="padding:5px;border:1px solid #000;">'+esc(getCabangName(r.cabang_id))+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.kategori_gender||'Umum')+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">-</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">-</td>'
+        +'<td style="padding:5px;border:1px solid #000;">-</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">-</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.status_daftar)+'</td></tr>';
+      var nm=String(r.daftar_anggota||'').split(';');
+      var jj=String(r.daftar_jenis_kelamin||'').split(';');
+      var nn=String(r.daftar_nisn||'').split(';');
+      var kk=String(r.daftar_kelas||'').split(';');
+      var tt=String(r.daftar_tempat_lahir||'').split(';');
+      var gg=String(r.daftar_tanggal_lahir||'').split(';');
+      var mi=0;
+      for(var m=0;m<nm.length;m++){
+        if(!nm[m].trim())continue;mi++;
+        body+='<tr style="background:#f4f6f8;">'
+          +'<td style="padding:3px 5px;border:1px solid #000;text-align:center;font-size:9px;color:#555;">'+(i+1)+'.'+mi+'</td>'
+          +'<td style="padding:3px 5px 3px 16px;border:1px solid #000;font-size:9px;color:#333;">\u2514 '+esc(nm[m].trim())+'</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;text-align:center;font-size:9px;color:#555;">anggota</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;font-size:9px;"></td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;font-size:9px;"></td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;text-align:center;font-size:9px;">'+esc((nn[m]||'').trim()||'-')+'</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;text-align:center;font-size:9px;">'+esc((jj[m]||'').trim()||'-')+'</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;font-size:9px;">'+esc(formatTTL((tt[m]||'').trim(),(gg[m]||'').trim()))+'</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;text-align:center;font-size:9px;">'+esc((kk[m]||'').trim()||'-')+'</td>'
+          +'<td style="padding:3px 5px;border:1px solid #000;font-size:9px;"></td></tr>';
+      }
+    } else {
+      body+='<tr>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+(i+1)+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;">'+esc(r.nama_peserta)+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">Individu</td>'
+        +'<td style="padding:5px;border:1px solid #000;">'+esc(getCabangName(r.cabang_id))+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.kategori_gender||'Umum')+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.nisn||'-')+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+(r.jenis_kelamin==='L'?'L':'P')+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;">'+esc(formatTTL(r.tempat_lahir,r.tanggal_lahir))+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.kelas||'-')+'</td>'
+        +'<td style="padding:5px;border:1px solid #000;text-align:center;">'+esc(r.status_daftar)+'</td></tr>';
+    }
+  });
   var footnote=draftCount>0?'<p style="font-size:11px;color:#b45309;margin-top:8px;">Catatan: Dokumen ini memuat '+draftCount+' peserta berstatus DRAFT/REVISI yang belum dikunci/dikirim.</p>':'';
   var pa=document.getElementById('print-area');pa.classList.remove('hidden');
   pa.innerHTML='<div style="font-family:\'Times New Roman\',serif;max-width:900px;margin:0 auto;padding:20px;">'
@@ -333,18 +371,19 @@ function cetakKolektif(){
     +'<table style="width:100%;font-size:12px;margin-bottom:10px;">'
     +'<tr><td style="width:160px;padding:2px 0;">Nama Sekolah</td><td>: <b>'+esc(currentUser.sekolah||'-')+'</b></td></tr>'
     +'<tr><td style="padding:2px 0;">NPSN</td><td>: '+esc(currentUser.npsn||'-')+'</td></tr>'
-    +'<tr><td style="padding:2px 0;">Jumlah Peserta</td><td>: <b>'+rows.length+'</b> peserta</td></tr>'
+    +'<tr><td style="padding:2px 0;">Jumlah Peserta</td><td>: <b>'+rows.length+'</b> peserta/tim</td></tr>'
     +'<tr><td style="padding:2px 0;">Waktu Kirim / Validasi</td><td>: '+waktuKirimTxt+'</td></tr></table>'
     +'<table style="width:100%;font-size:10px;border-collapse:collapse;"><thead><tr style="background:#eee;">'
     +'<th style="padding:5px;border:1px solid #000;width:26px;">No</th>'
-    +'<th style="padding:5px;border:1px solid #000;">Nama Peserta</th>'
-    +'<th style="padding:5px;border:1px solid #000;width:80px;">NISN</th>'
-    +'<th style="padding:5px;border:1px solid #000;width:40px;">JK</th>'
-    +'<th style="padding:5px;border:1px solid #000;width:110px;">Tempat, Tgl Lahir</th>'
-    +'<th style="padding:5px;border:1px solid #000;width:36px;">Kls</th>'
+    +'<th style="padding:5px;border:1px solid #000;">Nama Peserta / Tim</th>'
+    +'<th style="padding:5px;border:1px solid #000;width:52px;">Jenis</th>'
     +'<th style="padding:5px;border:1px solid #000;">Cabang Lomba</th>'
     +'<th style="padding:5px;border:1px solid #000;width:44px;">Kat.</th>'
-    +'<th style="padding:5px;border:1px solid #000;width:70px;">Status</th></tr></thead><tbody>'+trs+'</tbody></table>'
+    +'<th style="padding:5px;border:1px solid #000;width:70px;">NISN</th>'
+    +'<th style="padding:5px;border:1px solid #000;width:26px;">JK</th>'
+    +'<th style="padding:5px;border:1px solid #000;width:100px;">Tempat, Tgl Lahir</th>'
+    +'<th style="padding:5px;border:1px solid #000;width:30px;">Kls</th>'
+    +'<th style="padding:5px;border:1px solid #000;width:64px;">Status</th></tr></thead><tbody>'+body+'</tbody></table>'
     +footnote
     +signatureBlock()
     +'<div style="margin-top:24px;padding-top:8px;border-top:1px dashed #999;text-align:center;font-size:10px;color:#888;">Dicetak dari Portal Talenta v2.0 \u2013 Kecamatan Selogiri</div></div>';
